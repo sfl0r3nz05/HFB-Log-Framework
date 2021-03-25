@@ -34,6 +34,12 @@ func (cc *Chaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 	os.Stdout = rescueStdout
 	fmt.Printf("Captured: %s", out)
 	log.Infof("[%s][%s][example_cc][Init] ex02 Init",uuidgen(), CHANNEL_ENV)
+	params := []string{"set", "name", "name2"}
+	invokeArgs := make([][]byte, len(params))
+	for i, arg := range params {
+		invokeArgs[i] = []byte(arg)
+	}
+	stub.InvokeChaincode("recorder_cc", invokeArgs, CHANNEL_ENV)
 
 	_, args := stub.GetFunctionAndParameters()
 	var A, B string    // Entities

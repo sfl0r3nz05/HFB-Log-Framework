@@ -69,7 +69,7 @@
   },
   "orderers": {
     "orderer.example.com": {
-      "url": "172.19.0.1:7050",
+      "url": "172.18.0.1:7050",
       "grpcOptions": {
         "grpc.ssl_target_name_override": "orderer.example.com",
         "grpc-max-send-message-length": 15
@@ -81,7 +81,7 @@
   },
   "peers": {
     "peer0.org1.example.com": {
-      "url": "172.19.0.1:7051",
+      "url": "172.18.0.1:7051",
       "eventUrl": "peer0.org1.example.com:7053",
       "grpcOptions": {
         "grpc.ssl_target_name_override": "peer0.org1.example.com",
@@ -92,7 +92,7 @@
       }
     },
     "peer0.org2.example.com": {
-      "url": "172.19.0.1:8051",
+      "url": "172.18.0.1:8051",
       "eventUrl": "peer0.org2.example.com:8053",
       "grpcOptions": {
         "grpc.ssl_target_name_override": "peer0.org2.example.com",
@@ -105,7 +105,7 @@
   },
   "certificateAuthorities": {
     "ca.org1.example.com": {
-      "url": "https://172.19.0.1:7054",
+      "url": "https://172.18.0.1:7054",
       "grpcOptions": {
         "verify": true
       },
@@ -120,7 +120,7 @@
       ]
     },
     "ca.org2.example.com": {
-      "url": "https://172.19.0.1:8054",
+      "url": "https://172.18.0.1:8054",
       "grpcOptions": {
         "verify": true
       },

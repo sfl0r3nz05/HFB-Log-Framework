@@ -27,7 +27,7 @@ responses = loop.run_until_complete(cli.chaincode_install(
     requestor=org1_admin,
     peers=['peer0.org1.example.com'],
     cc_path='github.com/example_cc',
-    cc_name='example_cc',
+    cc_name='recorder_cc',
     cc_version='v1.0'
 ))
 
@@ -36,12 +36,12 @@ responses = loop.run_until_complete(cli.chaincode_install(
     requestor=org2_admin,
     peers=['peer0.org2.example.com'],
     cc_path='github.com/example_cc',
-    cc_name='example_cc',
+    cc_name='recorder_cc',
     cc_version='v1.0'
 ))
 
 # Instantiate Chaincode in Channel, the response should be true if succeed
-args = ['a', '600', 'b', '300']
+args = ["Qmeq4hW6kK2abdbpE2vc7FjSX1xmn1tphg2hGrHFGxqk16"]
 
 # policy, see https://hyperledger-fabric.readthedocs.io/en/release-1.4/endorsement-policies.html
 policy = {
@@ -60,7 +60,7 @@ response = loop.run_until_complete(cli.chaincode_instantiate(
     channel_name='modbuschannel',
     peers=['peer0.org1.example.com'],
     args=args,
-    cc_name='example_cc',
+    cc_name='recorder_cc',
     cc_version='v1.0',
     # cc_endorsement_policy=policy,  # optional, but recommended
     collections_config=None,  # optional, for private data policy

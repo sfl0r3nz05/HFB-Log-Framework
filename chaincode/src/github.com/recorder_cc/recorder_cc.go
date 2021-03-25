@@ -1,87 +1,126 @@
- package main
+package main
 
- import (
-	 "fmt"
- 
-	 "github.com/hyperledger/fabric/core/chaincode/shim"
-	 "github.com/hyperledger/fabric/protos/peer"
- )
- 
- type SimpleAsset struct {
- }
- 
- func (t *SimpleAsset) Init(stub shim.ChaincodeStubInterface) peer.Response {
-	 // Get the args from the transaction proposal
-	 args := stub.GetStringArgs()
-	 if len(args) != 2 {
-		 return shim.Error("Incorrect arguments. Expecting a key and a value")
-	 }
- 
-	 // Set up any variables or assets here by calling stub.PutState()
- 
-	 // We store the key and the value on the ledger
-	 err := stub.PutState(args[0], []byte(args[1]))
-	 if err != nil {
-		 return shim.Error(fmt.Sprintf("Failed to create asset: %s", args[0]))
-	 }
-	 return shim.Success(nil)
- }
- 
- // Invoke is called per transaction on the chaincode. Each transaction is
- // either a 'get' or a 'set' on the asset created by Init function. The Set
- // method may create a new asset by specifying a new key-value pair.
- func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
-	 // Extract the function and args from the transaction proposal
-	 fn, args := stub.GetFunctionAndParameters()
- 
-	 var result string
-	 var err error
-	 if fn == "set" {
-		 result, err = set(stub, args)
-	 } else { // assume 'get' even if fn is nil
-		 result, err = get(stub, args)
-	 }
-	 if err != nil {
-		 return shim.Error(err.Error())
-	 }
- 
-	 // Return the result as success payload
-	 return shim.Success([]byte(result))
- }
- 
- // Set stores the asset (both key and value) on the ledger. If the key exists,
- // it will override the value with the new one
- func set(stub shim.ChaincodeStubInterface, args []string) (string, error) {
-	 if len(args) != 2 {
-		 return "", fmt.Errorf("Incorrect arguments. Expecting a key and a value")
-	 }
- 
-	 err := stub.PutState(args[0], []byte(args[1]))
-	 if err != nil {
-		 return "", fmt.Errorf("Failed to set asset: %s", args[0])
-	 }
-	 return args[1], nil
- }
- 
- // Get returns the value of the specified asset key
- func get(stub shim.ChaincodeStubInterface, args []string) (string, error) {
-	 if len(args) != 1 {
-		 return "", fmt.Errorf("Incorrect arguments. Expecting a key")
-	 }
- 
-	 value, err := stub.GetState(args[0])
-	 if err != nil {
-		 return "", fmt.Errorf("Failed to get asset: %s with error: %s", args[0], err)
-	 }
-	 if value == nil {
-		 return "", fmt.Errorf("Asset not found: %s", args[0])
-	 }
-	 return string(value), nil
- }
- 
- // main function starts up the chaincode in the container during instantiate
- func main() {
-	 if err := shim.Start(new(SimpleAsset)); err != nil {
-		 fmt.Printf("Error starting SimpleAsset chaincode: %s", err)
-	 }
- }
+import (
+	"fmt"
+	"encoding/json"
+	"time"
+
+	"github.com/hyperledger/fabric/core/chaincode/shim"
+	pb "github.com/hyperledger/fabric/protos/peer")
+
+// SimpleChaincode example simple Chaincode implementation
+type SimpleChaincode struct {
+}
+
+// Define the resource structure
+type Resource struct {
+	Timestamp int64  `json:"timestamp"`
+	HASH      string `json:"hash"`
+}
+
+func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
+	fmt.Println("ex02 Init")
+	_, args := stub.GetFunctionAndParameters()
+	var hash string // Asset holdings
+	var err error
+
+	if len(args) != 1 {
+		return shim.Error("Incorrect argument numbers. Expecting 4")
+	}
+
+	// Initialize the chaincode
+	hash = args[0]
+	var r Resource
+	r.Timestamp = time.Now().Unix()
+	r.HASH = hash
+	jsonAsBytes, _ := json.Marshal(r) //marshal a marbles index struct with emtpy array of strings to clear the index
+
+	// Write the state to the ledger
+	err = stub.PutState("client", jsonAsBytes)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	err = stub.PutState("server", jsonAsBytes)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success(nil)
+}
+
+func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
+	fmt.Println("ex02 Invoke")
+	function, args := stub.GetFunctionAndParameters()
+	if function == "set" {
+		// Make payment of X units from A to B
+		result, err = t.set(stub, args)
+	} else if function == "query" {
+		// the old "Query" is now implemtned in invoke
+		result, err = t.query(stub, args)
+	}
+
+	return shim.Error("Invalid invoke function name. Expecting \"invoke\" \"delete\" \"query\"")
+}
+
+// Transaction makes payment of X units from A to B
+func (t *SimpleChaincode) set(stub shim.ChaincodeStubInterface, args []string) (string, error)) {
+	var A string    // Entities
+	var hash string // Asset holdings
+	var err error
+
+	if len(args) != 2 {
+		return "" , errors.New("Incorrect number of arguments. Expecting 3")
+	}
+
+	A = args[0]
+	hash = args[1]
+
+	var r Resource
+	r.Timestamp = time.Now().Unix()
+	r.HASH = hash
+	jsonAsBytes, _ := json.Marshal(r) //marshal a marbles index struct with emtpy array of strings to clear the index
+
+	// Write the state to the ledger
+	err = stub.PutState(A, jsonAsBytes)
+	if err != nil {
+		return "" , errors.New("Incorrect number of arguments. Expecting 3")
+	}
+	return "" , errors.New("Incorrect number of arguments. Expecting 3")
+}
+
+// query callback representing the query of a chaincode
+func (t *SimpleChaincode) query(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	var A string // Entities
+	var err error
+
+	if len(args) != 1 {
+		return "" , errors.New("Incorrect number of arguments. Expecting name of the person to query")
+	}
+
+	A = args[0]
+
+	// Get the state from the ledger
+	Avalbytes, err := stub.GetState(A)
+	if err != nil {
+		jsonResp := "{\"Error\":\"Failed to get state for " + A + "\"}"
+		return "" , errors.New("Incorrect number of arguments. Expecting name of the person to query")
+	}
+
+	if Avalbytes == nil {
+		jsonResp := "{\"Error\":\"Nil amount for " + A + "\"}"
+		return "" , errors.New("Incorrect number of arguments. Expecting name of the person to query")
+	}
+
+	jsonResp := "{\"Name\":\"" + A + "\",\"Amount\":\"" + string(Avalbytes) + "\"}"
+	fmt.Printf("Query Response:%s\n", jsonResp)
+
+	return string(Avalbytes)  , errors.New("Incorrect number of arguments. Expecting name of the person to query")
+}
+
+func main() {
+	err := shim.Start(new(SimpleChaincode))
+	if err != nil {
+		fmt.Printf("Error starting Simple chaincode: %s", err)
+	}
+}
