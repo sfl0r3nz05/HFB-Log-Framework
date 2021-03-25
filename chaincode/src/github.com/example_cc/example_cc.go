@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"io/ioutil"
+	"os"
 	"strconv"
 	"errors"
 	log "github.com/log"
@@ -15,12 +18,23 @@ type Chaincode struct {
 
 const logLevel string = "DEBUG"
 var CHANNEL_ENV string
+var outC string
+var sum string
+var out string
 
 func (cc *Chaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 	log.Init("DEBUG")
 	CHANNEL_ENV = stub.GetChannelID()
-
+	
+	rescueStdout := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+	w.Close()
+	out, _ := ioutil.ReadAll(r)
+	os.Stdout = rescueStdout
+	fmt.Printf("Captured: %s", out)
 	log.Infof("[%s][%s][example_cc][Init] ex02 Init",uuidgen(), CHANNEL_ENV)
+
 	_, args := stub.GetFunctionAndParameters()
 	var A, B string    // Entities
 	var Aval, Bval int // Asset holdings
@@ -49,6 +63,12 @@ func (cc *Chaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 		return shim.Error(err.Error())
 	}
 	//fmt.Printf("Aval = %d, Bval = %d\n", Aval, Bval)
+	rescueStdout = os.Stdout
+	r, w, _ = os.Pipe()
+	os.Stdout = w
+	w.Close()
+	out, _ = ioutil.ReadAll(r)
+	os.Stdout = rescueStdout
 	log.Infof("[%s][%s][example_cc][Init] Initialize the chaincode with Aval = %d, Bval = %d",uuidgen(), CHANNEL_ENV, Aval, Bval)
 
 	// Write the state to the ledger
