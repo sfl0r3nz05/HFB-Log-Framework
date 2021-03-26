@@ -21,28 +21,29 @@ gopath = os.path.normpath(os.path.join(
 os.environ['GOPATH'] = os.path.abspath(gopath)
 
 # Query a chaincode
-args = ['b']
+args = ["getsaccname"]
+# The response should be true if succeed
+response = loop.run_until_complete(cli.chaincode_query(
+   requestor=org1_admin,
+   channel_name='modbuschannel',
+   peers=['peer0.org1.example.com'],
+   args=args,
+   cc_name='ccctest_cc'
+))
+print("response", response)
+
+# Query a chaincode
+args = ["get","name"]
 # The response should be true if succeed
 response = loop.run_until_complete(cli.chaincode_query(
     requestor=org2_admin,
     channel_name='modbuschannel',
-    peers=['peer0.org2.example.com'],
+    peers=['peer0.org1.example.com'],
     args=args,
-    cc_name='example_cc'
+    cc_name='sacc_cc'
 ))
-
 print("response", response)
 
-# Query a chaincode
-#args = ['b']
-# The response should be true if succeed
-# response = loop.run_until_complete(cli.chaincode_query(
-#    requestor=org1_admin,
-#    channel_name='modbuschannel',
-#    peers=['peer1.org1.example.com'],
-#    args=args,
-#    cc_name='example_cc'
-# ))
 
 # Query a chaincode
 #args = ['b']
@@ -52,7 +53,7 @@ print("response", response)
 #    channel_name='modbuschannel',
 #    peers=['peer0.org2.example.com'],
 #    args=args,
-#    cc_name='example_cc'
+#    cc_name='ccctest_cc'
 # ))
 
 # Query a chaincode
@@ -63,5 +64,5 @@ print("response", response)
 #    channel_name='businesschannel',
 #    peers=['peer1.org2.example.com'],
 #    args=args,
-#    cc_name='example_cc'
+#    cc_name='ccctest_cc'
 # ))

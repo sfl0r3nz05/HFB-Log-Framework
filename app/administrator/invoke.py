@@ -20,14 +20,14 @@ gopath = os.path.normpath(os.path.join(
 os.environ['GOPATH'] = os.path.abspath(gopath)
 
 # Invoke a chaincode
-args = ['a', 'b', '300']
+args = ["set","name","Mark"]
 # The response should be true if succeed
 response = loop.run_until_complete(cli.chaincode_invoke(
     requestor=org1_admin,
     channel_name='modbuschannel',
     peers=['peer0.org1.example.com'],
     args=args,
-    cc_name='example_cc',
+    cc_name='sacc_cc',
     transient_map=None,  # optional, for private data
     # for being sure chaincode invocation has been commited in the ledger, default is on tx event
     wait_for_event=True,
