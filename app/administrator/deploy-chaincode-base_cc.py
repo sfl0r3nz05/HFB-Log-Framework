@@ -26,8 +26,8 @@ print("gopath", gopath)
 responses = loop.run_until_complete(cli.chaincode_install(
     requestor=org1_admin,
     peers=['peer0.org1.example.com'],
-    cc_path='github.com/sacc_cc',
-    cc_name='sacc_cc',
+    cc_path='github.com/base_cc',
+    cc_name='base_cc',
     cc_version='v1.0'
 ))
 
@@ -35,13 +35,13 @@ responses = loop.run_until_complete(cli.chaincode_install(
 responses = loop.run_until_complete(cli.chaincode_install(
     requestor=org2_admin,
     peers=['peer0.org2.example.com'],
-    cc_path='github.com/sacc_cc',
-    cc_name='sacc_cc',
+    cc_path='github.com/base_cc',
+    cc_name='base_cc',
     cc_version='v1.0'
 ))
 
 # Instantiate Chaincode in Channel, the response should be true if succeed
-args = ['name', 'Petter']
+args = ['b2f79319-c6a8-4d91-ab05-5761656e8e96', 'c9dee11b608f7ce862eccdff4646093f715cd82eed354742461b77a13362f23e']
 
 # policy, see https://hyperledger-fabric.readthedocs.io/en/release-1.4/endorsement-policies.html
 policy = {
@@ -60,12 +60,21 @@ response = loop.run_until_complete(cli.chaincode_instantiate(
     channel_name='modbuschannel',
     peers=['peer0.org1.example.com'],
     args=args,
-    cc_name='sacc_cc',
+    cc_name='base_cc',
     cc_version='v1.0',
-    # cc_endorsement_policy=policy,  # optional, but recommended
     collections_config=None,  # optional, for private data policy
     transient_map=None,  # optional, for private data
     wait_for_event=True  # optional, for being sure chaincode is instantiated#
 ))
-
 print("response", response)
+
+# Query a chaincode, [a]
+args = ['b2f79319-c6a8-4d91-ab05-5761656e8e96']
+# The response should be true if succeed
+response = loop.run_until_complete(cli.chaincode_query(
+    requestor=org1_admin,
+    channel_name='modbuschannel',
+    peers=['peer0.org1.example.com'],
+    args=args,
+    cc_name='base_cc'
+))

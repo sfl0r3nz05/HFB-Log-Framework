@@ -12,5 +12,5 @@ func uuidgen()(string) {
 }
 
 //func main(){
-//	log.Errorf("[%s][modbuschannel][example_cc][Init] Error starting Simple chaincode",uuidgen())
+//	log.Errorf("[%s][modbuschannel][usecase_cc][Init] Error starting Simple chaincode",uuidgen())
 //}

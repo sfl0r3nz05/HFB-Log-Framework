@@ -20,52 +20,16 @@ gopath = os.path.normpath(os.path.join(
 os.environ['GOPATH'] = os.path.abspath(gopath)
 
 # Invoke a chaincode
-args = ["set","name","Mark"]
+args = ['a', 'b', '100']
 # The response should be true if succeed
 response = loop.run_until_complete(cli.chaincode_invoke(
     requestor=org1_admin,
     channel_name='modbuschannel',
     peers=['peer0.org1.example.com'],
     args=args,
-    cc_name='sacc_cc',
+    cc_name='usecase_cc',
     transient_map=None,  # optional, for private data
-    # for being sure chaincode invocation has been commited in the ledger, default is on tx event
+    fcn='set',
     wait_for_event=True,
     # cc_pattern='^invoked*' # if you want to wait for chaincode event and you have a `stub.SetEvent("invoked", value)` in your chaincode
 ))
-
-# response = loop.run_until_complete(cli.chaincode_invoke(
-#   requestor=org1_admin,
-#   channel_name='modbuschannel',
-#   peers=['peer1.org1.example.com'],
-#   args=args,
-#   cc_name='example_cc',
-#   transient_map=None,  # optional, for private data
-#   # for being sure chaincode invocation has been commited in the ledger, default is on tx event
-#   wait_for_event=True,
-#   # cc_pattern='^invoked*' # if you want to wait for chaincode event and you have a `stub.SetEvent("invoked", value)` in your chaincode
-# ))
-
-# response = loop.run_until_complete(cli.chaincode_invoke(
-#   requestor=org2_admin,
-#   channel_name='modbuschannel',
-#   peers=['peer0.org2.example.com'],
-#   args=args,
-#   cc_name='example_cc',
-#   transient_map=None,  # optional, for private data
-#   # for being sure chaincode invocation has been commited in the ledger, default is on tx event
-#   wait_for_event=True,
-#   # cc_pattern='^invoked*' # if you want to wait for chaincode event and you have a `stub.SetEvent("invoked", value)` in your chaincode
-# ))
-
-# response = loop.run_until_complete(cli.chaincode_invoke(
-#   requestor=org2_admin,
-#   channel_name='modbuschannel',
-#   peers=['peer1.org2.example.com'],
-#   args=args,
-#   cc_name='example_cc',
-#   transient_map=None,  # optional, for private data
-#   # for being sure chaincode invocation has been commited in the ledger, default is on tx event
-#   wait_for_event=True,
-#   # cc_pattern='^invoked*' # if you want to wait for chaincode event and you have a `stub.SetEvent("invoked", value)` in your chaincode
-# ))

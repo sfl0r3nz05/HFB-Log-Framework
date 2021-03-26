@@ -5,59 +5,48 @@
 	 "github.com/hyperledger/fabric/protos/peer"
 	 "github.com/hyperledger/fabric/core/chaincode/shim"
  )
- 
- // SimpleAsset implements a simple chaincode to manage an asset
+
  type SimpleAsset struct {
  }
- 
- // Init is called during chaincode instantiation to initialize any
- // data. Note that chaincode upgrade also calls this function to reset
- // or to migrate data.
+
  func (t *SimpleAsset) Init(stub shim.ChaincodeStubInterface) peer.Response {
 	fmt.Println("ex02 Init")
 	_, args := stub.GetFunctionAndParameters()
 	if len(args) != 2 {
 		return shim.Error("Incorrect arguments. Expecting a key and a value")
 	}
- 
-	 // Set up any variables or assets here by calling stub.PutState()
- 
-	 // We store the key and the value on the ledger
+
 	 err := stub.PutState(args[0], []byte(args[1]))
 	 if err != nil {
 		 return shim.Error(fmt.Sprintf("Failed to create asset: %s", args[0]))
 	 }
 	 return shim.Success(nil)
  }
- 
- // Invoke is called per transaction on the chaincode. Each transaction is
- // either a 'get' or a 'set' on the asset created by Init function. The Set
- // method may create a new asset by specifying a new key-value pair.
+
  func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	 // Extract the function and args from the transaction proposal
-	 fn, args := stub.GetFunctionAndParameters()
- 
+	 function, args := stub.GetFunctionAndParameters()
 	 var result string
 	 var err error
-	 if fn == "set" {
+	 if function == "set" {
 		 result, err = set(stub, args)
-	 } else { // assume 'get' even if fn is nil
+	 } else if function == "get" {
 		 result, err = get(stub, args)
-	 }
+	 } 
 	 if err != nil {
-		 return shim.Error(err.Error())
-	 }
- 
+		return shim.Error(err.Error())
+	}
 	 // Return the result as success payload
 	 return shim.Success([]byte(result))
  }
  
- // Set stores the asset (both key and value) on the ledger. If the key exists,
- // it will override the value with the new one
  func set(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	 if len(args) != 2 {
 		 return "", fmt.Errorf("Incorrect arguments. Expecting a key and a value")
 	 }
+
+	 fmt.Printf("Arg0 %s", args[0])
+	 fmt.Printf("Arg1 %s", args[1])
  
 	 err := stub.PutState(args[0], []byte(args[1]))
 	 if err != nil {

@@ -20,7 +20,7 @@
 
 | chaincode          | channel-join | deploy-chaincode | invoke | query  |
 | ------------------ | ------------ | ---------------- | ------ | ------ |
-| example_cc         | v1           | v1               | v1     | v1     |
+| usecase_cc         | v1           | v1               | v1     | v1     |
 | ------------------ | ------------ | ---------------- | ------ | ------ |
 
 ---
@@ -39,4 +39,4 @@
    sudo cp -rf /home/ubuntu/go/src/golang.org /var/lib/docker/overlay2/4300e823d5268d558c19370bda0ff2fa61e54c4c743133b5be58634adfbefc3b/diff/opt/gopath/src/
 
 9. 
-   sudo cp -rf /home/ubuntu/HFB-network-main/chaincode/src/github.com/example_cc/log /var/lib/docker/overlay2/4300e823d5268d558c19370bda0ff2fa61e54c4c743133b5be58634adfbefc3b/diff/opt/gopath/src/github.com/
+   sudo cp -rf /home/ubuntu/HFB-network-main/chaincode/src/github.com/usecase_cc/log /var/lib/docker/overlay2/4300e823d5268d558c19370bda0ff2fa61e54c4c743133b5be58634adfbefc3b/diff/opt/gopath/src/github.com/
