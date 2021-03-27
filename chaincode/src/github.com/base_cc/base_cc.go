@@ -44,9 +44,6 @@
 	 if len(args) != 2 {
 		 return "", fmt.Errorf("Incorrect arguments. Expecting a key and a value")
 	 }
-
-	 fmt.Printf("Arg0 %s", args[0])
-	 fmt.Printf("Arg1 %s", args[1])
  
 	 err := stub.PutState(args[0], []byte(args[1]))
 	 if err != nil {

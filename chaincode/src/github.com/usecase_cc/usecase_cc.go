@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
 	"os"
-	"strconv"
 	"errors"
+	"strconv"
+	"io/ioutil"
+	"crypto/sha256"
 	log "github.com/log"
+	b64 "encoding/base64"
 	//log "github.com/sirupsen/logrus"
 	pb "github.com/hyperledger/fabric/protos/peer"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -78,7 +79,7 @@ func (cc *Chaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 
 func (cc *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	//////////////////////////////LOG1///////////////////////////////////////
-	var uuid = uuidgen()
+	uuid := uuidgen()
 	rescueStdout := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
@@ -86,7 +87,11 @@ func (cc *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	out, _ := ioutil.ReadAll(r)
 	os.Stdout = rescueStdout
 	log.Infof("[%s][%s][usecase_cc][Invoke] ex02 Invoke", uuid, CHANNEL_ENV)
-	params := []string{"set", uuid, string(out)}
+	h := sha256.New()
+	h.Write([]byte(out))
+	b := h.Sum(nil)
+	sEnc := b64.StdEncoding.EncodeToString(b)
+	params := []string{"set", uuid, sEnc}
 	invokeArgs := make([][]byte, len(params))
 	for i, arg := range params {invokeArgs[i] = []byte(arg)}
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
@@ -118,14 +123,24 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	var X int          // Transaction value
 	var err error
 
-	log.Infof("[%s][%s][usecase_cc][set] ex02 set",uuidgen(), CHANNEL_ENV)
-	params := []string{"get", "b2f79319-c6a8-4d91-ab05-5761656e8e96"}
+	//////////////////////////////LOG3///////////////////////////////////////
+	uuid := uuidgen()
+	rescueStdout := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+	w.Close()
+	out, _ := ioutil.ReadAll(r)
+	os.Stdout = rescueStdout
+	log.Infof("[%s][%s][usecase_cc][set] ex02 set", uuid, CHANNEL_ENV)
+	h := sha256.New()
+	h.Write([]byte(out))
+	b := h.Sum(nil)
+	sEnc := b64.StdEncoding.EncodeToString(b)
+	params := []string{"set", uuid, sEnc}
 	invokeArgs := make([][]byte, len(params))
-	for i, arg := range params {
-		invokeArgs[i] = []byte(arg)
-	}
-	response := stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-	fmt.Printf("Response:%s\n", response)
+	for i, arg := range params {invokeArgs[i] = []byte(arg)}
+	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
+	//////////////////////////////LOG3///////////////////////////////////////
 
 	if len(args) != 3 {
 		//return shim.Error("Incorrect number of arguments. Expecting 3")

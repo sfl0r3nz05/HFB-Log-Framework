@@ -20,7 +20,7 @@ gopath = os.path.normpath(os.path.join(
 ))
 os.environ['GOPATH'] = os.path.abspath(gopath)
 
-#    # Query a chaincode
+# Query a chaincode
 args = ['b']
 # The response should be true if succeed
 response = loop.run_until_complete(cli.chaincode_query(
@@ -32,16 +32,14 @@ response = loop.run_until_complete(cli.chaincode_query(
 ))
 print("response", response)
 
-# Query a chaincode
-args = ['ffaaf79c-b3d5-48d6-8c06-22cb74c62af5']
-# The response should be true if succeed
-response = loop.run_until_complete(cli.chaincode_query(
-    requestor=org1_admin,
-    channel_name='modbuschannel',
-    peers=['peer0.org1.example.com'],
-    args=args,
-    cc_name='base_cc',
-    fcn="get"
-))
-
-print("response", response)
+#   # Query a chaincode
+#   args = ['4a7cb303-5608-482b-b046-37e6d0dd23a3']
+#   # The response should be true if succeed
+#   response = loop.run_until_complete(cli.chaincode_query(
+#       requestor=org1_admin,
+#       channel_name='modbuschannel',
+#       peers=['peer0.org1.example.com'],
+#       args=args,
+#       cc_name='base_cc',
+#       fcn="get"
+#   ))
