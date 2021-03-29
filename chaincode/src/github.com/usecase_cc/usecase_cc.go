@@ -2,13 +2,12 @@ package main
 
 import (
 	"os"
+	"fmt"
 	"errors"
 	"strconv"
-	"io/ioutil"
 	"crypto/sha256"
+	"encoding/base64"
 	log "github.com/log"
-	b64 "encoding/base64"
-	//log "github.com/sirupsen/logrus"
 	pb "github.com/hyperledger/fabric/protos/peer"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -78,27 +77,12 @@ func (cc *Chaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 }
 
 func (cc *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
-	//////////////////////////////LOG1///////////////////////////////////////
-	uuid := uuidgen()
-	rescueStdout := os.Stdout
-	r, w, _ := os.Pipe()
-	os.Stdout = w
-	w.Close()
-	out, _ := ioutil.ReadAll(r)
-	os.Stdout = rescueStdout
-	log.Infof("[%s][%s][usecase_cc][Invoke] ex02 Invoke", uuid, CHANNEL_ENV)
-	h := sha256.New()
-	h.Write([]byte(out))
-	b := h.Sum(nil)
-	sEnc := b64.StdEncoding.EncodeToString(b)
-	params := []string{"set", uuid, sEnc}
-	invokeArgs := make([][]byte, len(params))
-	for i, arg := range params {invokeArgs[i] = []byte(arg)}
-	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-	//////////////////////////////LOG1///////////////////////////////////////
-
-	var err error
 	var result string
+	var err error
+
+	uuid := uuidgen()
+	log.Infof("[%s][%s][usecase_cc][Invoke] ex02 Invoke", uuid, CHANNEL_ENV)
+
 	function, args := stub.GetFunctionAndParameters()
 	if function == "set" {
 		// Make payment of X units from A to B
@@ -121,26 +105,24 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	var A, B string    // Entities
 	var Aval, Bval int // Asset holdings
 	var X int          // Transaction value
-	var err error
 
-	//////////////////////////////LOG3///////////////////////////////////////
 	uuid := uuidgen()
-	rescueStdout := os.Stdout
-	r, w, _ := os.Pipe()
+	r, w, err := os.Pipe()
+	origStdout := os.Stdout
 	os.Stdout = w
-	w.Close()
-	out, _ := ioutil.ReadAll(r)
-	os.Stdout = rescueStdout
 	log.Infof("[%s][%s][usecase_cc][set] ex02 set", uuid, CHANNEL_ENV)
-	h := sha256.New()
-	h.Write([]byte(out))
-	b := h.Sum(nil)
-	sEnc := b64.StdEncoding.EncodeToString(b)
-	params := []string{"set", uuid, sEnc}
+	buf := make([]byte, 1024)
+	n, err := r.Read(buf)
+	os.Stdout = origStdout
+	hasher := sha256.New()
+	hasher.Write(buf[:n])
+	sha := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+	params := []string{"set", uuid, sha}
+	fmt.Printf("uuid = %s, sha = %s\n", uuid, sha)
 	invokeArgs := make([][]byte, len(params))
 	for i, arg := range params {invokeArgs[i] = []byte(arg)}
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-	//////////////////////////////LOG3///////////////////////////////////////
+
 
 	if len(args) != 3 {
 		//return shim.Error("Incorrect number of arguments. Expecting 3")
@@ -152,7 +134,6 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	B = args[1]
 
 	// Get the state from the ledger
-	// TODO: will be nice to have a GetAllState call to ledger
 	Avalbytes, err := stub.GetState(A)
 	if err != nil {
 		//return shim.Error("Failed to get state")
@@ -206,8 +187,24 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 		return "" , errors.New(ERRORPutState)
 	}
 
-	payloadAsBytes := []byte(strconv.Itoa(Bval))	
-	log.Infof("[%s][%s][usecase_cc][Transaction] Transaction makes payment of X units from A to B",uuidgen(), CHANNEL_ENV)
+	uuid = uuidgen()
+	r, w, err = os.Pipe()
+	origStdout = os.Stdout
+	os.Stdout = w
+	payloadAsBytes := []byte(strconv.Itoa(Bval))
+	log.Infof("[%s][%s][usecase_cc][Transaction] Transaction makes payment of X units from A to B",uuid, CHANNEL_ENV)
+	buf = make([]byte, 1024)
+	n, err = r.Read(buf)
+	os.Stdout = origStdout
+	hasher = sha256.New()
+	hasher.Write(buf[:n])
+	sha = base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+	params = []string{"set", uuid, sha}
+	fmt.Printf("uuid = %s, sha = %s\n", uuid, sha)
+	invokeArgs = make([][]byte, len(params))
+	for i, arg := range params {invokeArgs[i] = []byte(arg)}
+	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
+
 	return string(payloadAsBytes) , errors.New("")
 }
 
