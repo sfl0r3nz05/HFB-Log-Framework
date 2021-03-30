@@ -1,7 +1,7 @@
 package main
 
 import (
-	"os"
+	//"os"
 	"fmt"
 	"errors"
 	"strconv"
@@ -19,14 +19,16 @@ type Chaincode struct {
 const logLevel string = "DEBUG"
 var CHANNEL_ENV string
 var outC string
+var TxID string
 var sum string
 var out string
 
 func (cc *Chaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 	log.Init("DEBUG")
 	CHANNEL_ENV = stub.GetChannelID()
+	TxID = stub.GetTxID()
 
-	log.Infof("[%s][%s][usecase_cc][Init] ex02 Init",uuidgen(), CHANNEL_ENV)
+	log.Infof("[%s][%s][%s][usecase_cc][Init] ex02 Init",uuidgen(), CHANNEL_ENV, TxID)
 
 	_, args := stub.GetFunctionAndParameters()
 	var A, B string    // Entities
@@ -35,7 +37,7 @@ func (cc *Chaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 
 	if len(args) != 4 {
 		//return shim.Error("Incorrect argument numbers. Expecting 4")
-		log.Errorf("[%s][%s][usecase_cc][valueIssuer] Incorrect argument numbers. Expecting 4: %v",uuidgen(), CHANNEL_ENV, err.Error())
+		log.Errorf("[%s][%s][%s][usecase_cc][valueIssuer] Incorrect argument numbers. Expecting 4: %v",uuidgen(), CHANNEL_ENV, TxID, err.Error())
 		return shim.Error(err.Error())
 	}
 
@@ -44,35 +46,35 @@ func (cc *Chaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 	Aval, err = strconv.Atoi(args[1])
 	if err != nil {
 		//return shim.Error("Expecting integer value for asset holding")
-		log.Errorf("[%s][%s][usecase_cc][valueIssuer] Expecting integer value for asset holding: %v",uuidgen(), CHANNEL_ENV, err.Error())
+		log.Errorf("[%s][%s][%s][usecase_cc][valueIssuer] Expecting integer value for asset holding: %v",uuidgen(), CHANNEL_ENV, TxID, err.Error())
 		return shim.Error(err.Error())
 	}
 	B = args[2]
 	Bval, err = strconv.Atoi(args[3])
 	if err != nil {
 		//return shim.Error("Expecting integer value for asset holding")
-		log.Errorf("[%s][%s][usecase_cc][valueIssuer] Expecting integer value for asset holding: %v",uuidgen(), CHANNEL_ENV, err.Error())
+		log.Errorf("[%s][%s][%s][usecase_cc][valueIssuer] Expecting integer value for asset holding: %v",uuidgen(), CHANNEL_ENV, TxID, err.Error())
 		return shim.Error(err.Error())
 	}
 	//fmt.Printf("Aval = %d, Bval = %d\n", Aval, Bval)
-	log.Infof("[%s][%s][usecase_cc][Init] Initialize the chaincode with Aval = %d, Bval = %d",uuidgen(), CHANNEL_ENV, Aval, Bval)
+	log.Infof("[%s][%s][%s][usecase_cc][Init] Initialize the chaincode with Aval = %d, Bval = %d",uuidgen(), CHANNEL_ENV, TxID, Aval, Bval)
 
 	// Write the state to the ledger
 	err = stub.PutState(A, []byte(strconv.Itoa(Aval)))
 	if err != nil {
 		//return shim.Error(err.Error())
-		log.Errorf("[%s][%s][usecase_cc][stateIssuer] Error in writing the state to the ledger: %v",uuidgen(), CHANNEL_ENV, err.Error())
+		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Error in writing the state to the ledger: %v",uuidgen(), CHANNEL_ENV, TxID, err.Error())
 		return shim.Error(err.Error())
 	}
 
 	err = stub.PutState(B, []byte(strconv.Itoa(Bval)))
 	if err != nil {
 		//return shim.Error(err.Error())
-		log.Errorf("[%s][%s][usecase_cc][stateIssuer] Error in writing the state to the ledger: %v",uuidgen(), CHANNEL_ENV, err.Error())
+		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Error in writing the state to the ledger: %v",uuidgen(), CHANNEL_ENV, TxID, err.Error())
 		return shim.Error(err.Error())
 	}
 
-	log.Infof("[%s][%s][usecase_cc][PutState] Succeed to write the state to the ledger",uuidgen(), CHANNEL_ENV)
+	log.Infof("[%s][%s][%s][usecase_cc][PutState] Succeed to write the state to the ledger",uuidgen(), CHANNEL_ENV, TxID)
 	return shim.Success(nil)
 }
 
@@ -81,14 +83,14 @@ func (cc *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	var err error
 
 	uuid := uuidgen()
-	log.Infof("[%s][%s][usecase_cc][Invoke] ex02 Invoke", uuid, CHANNEL_ENV)
-
+	log.Infof("[%s][%s][%s][usecase_cc][Invoke] ex02 Invoke", uuid, CHANNEL_ENV, TxID)
 	function, args := stub.GetFunctionAndParameters()
+
 	if function == "set" {
 		// Make payment of X units from A to B
 		result, err = cc.set(stub, args)
 		if err != nil {
-			log.Errorf("[%s][%s][set] Error %v",uuidgen(), CHANNEL_ENV, err)
+			log.Errorf("[%s][%s][%s][set] Error %v",uuidgen(), CHANNEL_ENV, TxID, err)
 		}
 	} else if function == "delete" {
 		// Deletes an entity from its state
@@ -107,15 +109,9 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	var X int          // Transaction value
 
 	uuid := uuidgen()
-	r, w, err := os.Pipe()
-	origStdout := os.Stdout
-	os.Stdout = w
-	log.Infof("[%s][%s][usecase_cc][set] ex02 set", uuid, CHANNEL_ENV)
-	buf := make([]byte, 1024)
-	n, err := r.Read(buf)
-	os.Stdout = origStdout
+	log.Infof("[%s][%s][%s][usecase_cc][set] ex02 set", uuid, CHANNEL_ENV, TxID)
 	hasher := sha256.New()
-	hasher.Write(buf[:n])
+	hasher.Write([]byte(uuid))
 	sha := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
 	params := []string{"set", uuid, sha}
 	fmt.Printf("uuid = %s, sha = %s\n", uuid, sha)
@@ -126,7 +122,7 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 
 	if len(args) != 3 {
 		//return shim.Error("Incorrect number of arguments. Expecting 3")
-		log.Errorf("[%s][%s][usecase_cc][valueIssuer] Incorrect number of arguments. Expecting 3",uuidgen(), CHANNEL_ENV)
+		log.Errorf("[%s][%s][%s][usecase_cc][valueIssuer] Incorrect number of arguments. Expecting 3",uuidgen(), CHANNEL_ENV, TxID)
 		return "" , errors.New(ERRORWrongNumberArgs)
 	}
 
@@ -137,12 +133,12 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	Avalbytes, err := stub.GetState(A)
 	if err != nil {
 		//return shim.Error("Failed to get state")
-		log.Errorf("[%s][%s][usecase_cc][stateIssuer] Failed to get state",uuidgen(), CHANNEL_ENV)
+		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to get state",uuidgen(), CHANNEL_ENV, TxID)
 		return "" , errors.New(ERRORGetState)
 	}
 	if Avalbytes == nil {
 		//return shim.Error("Entity not found")	
-		log.Errorf("[%s][%s][usecase_cc][idIssuer] Entity not found",uuidgen(), CHANNEL_ENV)	
+		log.Errorf("[%s][%s][%s][usecase_cc][idIssuer] Entity not found",uuidgen(), CHANNEL_ENV, TxID)	
 		return "" , errors.New(ERRORnotID)	
 	}
 	Aval, _ = strconv.Atoi(string(Avalbytes))
@@ -150,12 +146,12 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	Bvalbytes, err := stub.GetState(B)
 	if err != nil {
 		//return shim.Error("Failed to get state")
-		log.Errorf("[%s][%s][usecase_cc][stateIssuer] Failed to get state",uuidgen(), CHANNEL_ENV)
+		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to get state",uuidgen(), CHANNEL_ENV, TxID)
 		return "" , errors.New(ERRORGetState)
 	}
 	if Bvalbytes == nil {
 		//return shim.Error("Entity not found")
-		log.Errorf("[%s][%s][usecase_cc][idIssuer] Entity not found",uuidgen(), CHANNEL_ENV)	
+		log.Errorf("[%s][%s][%s][usecase_cc][idIssuer] Entity not found",uuidgen(), CHANNEL_ENV, TxID)	
 		return "" , errors.New(ERRORnotID)
 	}
 	Bval, _ = strconv.Atoi(string(Bvalbytes))
@@ -164,40 +160,34 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	X, err = strconv.Atoi(args[2])
 	if err != nil {
 		//return shim.Error("Invalid transaction amount, expecting a integer value")
-		log.Errorf("[%s][%s][usecase_cc][valueIssuer] Invalid transaction amount, expecting a integer value",uuidgen(), CHANNEL_ENV)
+		log.Errorf("[%s][%s][%s][usecase_cc][valueIssuer] Invalid transaction amount, expecting a integer value",uuidgen(), CHANNEL_ENV, TxID)
 		return "" , errors.New(ERRORParsingData)	
 	}
-	Aval = Aval - X
+	Aval = Aval + X
 	Bval = Bval + X
 	//fmt.Printf("Aval = %d, Bval = %d\n", Aval, Bval)
-	log.Infof("[%s][%s][usecase_cc][Transaction] Aval = %d, Bval = %d after performing the transaction",uuidgen(), CHANNEL_ENV, Aval, Bval)	
+	log.Infof("[%s][%s][%s][usecase_cc][Transaction] Aval = %d, Bval = %d after performing the transaction",uuidgen(), CHANNEL_ENV, TxID, Aval, Bval)	
 
 	// Write the state back to the ledger
 	err = stub.PutState(A, []byte(strconv.Itoa(Aval)))
 	if err != nil {
 		//return shim.Error(err.Error())
-		log.Errorf("[%s][%s][usecase_cc][stateIssuer] Failed to write the state back to the ledger",uuidgen(), CHANNEL_ENV)
+		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to write the state back to the ledger",uuidgen(), CHANNEL_ENV, TxID)
 		return "" , errors.New(ERRORPutState)	
 	}
 
 	err = stub.PutState(B, []byte(strconv.Itoa(Bval)))
 	if err != nil {
 		//return shim.Error(err.Error())
-		log.Errorf("[%s][%s][usecase_cc][stateIssuer] Failed to write the state back to the ledger",uuidgen(), CHANNEL_ENV)
+		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to write the state back to the ledger",uuidgen(), CHANNEL_ENV, TxID)
 		return "" , errors.New(ERRORPutState)
 	}
 
 	uuid = uuidgen()
-	r, w, err = os.Pipe()
-	origStdout = os.Stdout
-	os.Stdout = w
 	payloadAsBytes := []byte(strconv.Itoa(Bval))
-	log.Infof("[%s][%s][usecase_cc][Transaction] Transaction makes payment of X units from A to B",uuid, CHANNEL_ENV)
-	buf = make([]byte, 1024)
-	n, err = r.Read(buf)
-	os.Stdout = origStdout
+	log.Infof("[%s][%s][%s][usecase_cc][Transaction] Transaction makes payment of X units from A to B",uuid, CHANNEL_ENV, TxID)
 	hasher = sha256.New()
-	hasher.Write(buf[:n])
+	hasher.Write([]byte(uuid))
 	sha = base64.URLEncoding.EncodeToString(hasher.Sum(nil))
 	params = []string{"set", uuid, sha}
 	fmt.Printf("uuid = %s, sha = %s\n", uuid, sha)
@@ -211,7 +201,7 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 // Deletes an entity from state
 func (cc *Chaincode) delete(stub shim.ChaincodeStubInterface, args []string) (string, error){
 	if len(args) != 1 {
-		log.Errorf("[%s][%s][usecase_cc][valueIssuer] Incorrect number of arguments. Expecting 1",uuidgen(), CHANNEL_ENV)
+		log.Errorf("[%s][%s][%s][usecase_cc][valueIssuer] Incorrect number of arguments. Expecting 1",uuidgen(), CHANNEL_ENV, TxID)
 		return "" , errors.New(ERRORWrongNumberArgs)
 	}
 
@@ -220,11 +210,11 @@ func (cc *Chaincode) delete(stub shim.ChaincodeStubInterface, args []string) (st
 	// Delete the key from the state in ledger
 	err := stub.DelState(A)
 	if err != nil {
-		log.Errorf("[%s][%s][usecase_cc][stateIssuer] Failed to delete state",uuidgen(), CHANNEL_ENV)
+		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to delete state",uuidgen(), CHANNEL_ENV, TxID)
 		return "" , errors.New(ERRORDelState)
 	}
 
-	log.Infof("[%s][%s][usecase_cc][DelState] Succeed to delete an entity from state",uuidgen(), CHANNEL_ENV)
+	log.Infof("[%s][%s][%s][usecase_cc][DelState] Succeed to delete an entity from state",uuidgen(), CHANNEL_ENV, TxID)
 	return "", errors.New("")
 }
 
@@ -235,7 +225,7 @@ func (cc *Chaincode) query(stub shim.ChaincodeStubInterface, args []string) (str
 
 	if len(args) != 1 {
 		//return shim.Error("Incorrect number of arguments. Expecting name of the person to query")
-		log.Errorf("[%s][%s][usecase_cc][valueIssuer] Incorrect number of arguments. Expecting name of the person to query",uuidgen(), CHANNEL_ENV)
+		log.Errorf("[%s][%s][%s][usecase_cc][valueIssuer] Incorrect number of arguments. Expecting name of the person to query",uuidgen(), CHANNEL_ENV, TxID)
 		return "" , errors.New(ERRORWrongNumberArgs)
 	}
 
@@ -246,20 +236,19 @@ func (cc *Chaincode) query(stub shim.ChaincodeStubInterface, args []string) (str
 	if err != nil {
 		jsonResp := "{\"Error\":\"Failed to get state for " + A + "\"}"
 		//return shim.Error(jsonResp)
-		log.Errorf("[%s][%s][usecase_cc][stateIssuer] %s",uuidgen(), CHANNEL_ENV,jsonResp)
+		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] %s",uuidgen(), CHANNEL_ENV, TxID, jsonResp)
 		return "" , errors.New(ERRORGetState)	
 	}
 
 	if Avalbytes == nil {
 		jsonResp := "{\"Error\":\"Nil amount for " + A + "\"}"
 		//return shim.Error(jsonResp)
-		log.Errorf("[%s][%s][usecase_cc][valueIssuer] %s",uuidgen(), CHANNEL_ENV,jsonResp)	
+		log.Errorf("[%s][%s][%s][usecase_cc][valueIssuer] %s",uuidgen(), CHANNEL_ENV, TxID, jsonResp)	
 		return "" , errors.New(ERRORParsingData)
 	}
 
 	jsonResp := "{\"Name\":\"" + A + "\",\"Amount\":\"" + string(Avalbytes) + "\"}"
-	//fmt.Printf("Query Response:%s\n", jsonResp)
-	log.Infof("[%s][%s][usecase_cc][Query] Query Response: %s",uuidgen(), CHANNEL_ENV,jsonResp)
+	log.Infof("[%s][%s][%s][usecase_cc][Query] Query Response: %s",uuidgen(), CHANNEL_ENV, TxID, jsonResp)
 	return string(Avalbytes) , errors.New(ERRORParsingData)
 }
 
