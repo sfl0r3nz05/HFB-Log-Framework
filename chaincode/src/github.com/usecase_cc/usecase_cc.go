@@ -1,12 +1,8 @@
 package main
 
 import (
-	//"os"
-	"fmt"
 	"errors"
 	"strconv"
-	"crypto/sha256"
-	"encoding/base64"
 	log "github.com/log"
 	pb "github.com/hyperledger/fabric/protos/peer"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -80,7 +76,6 @@ func (cc *Chaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 
 func (cc *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	var result string
-	var err error
 
 	uuid := uuidgen()
 	log.Infof("[%s][%s][%s][usecase_cc][Invoke] ex02 Invoke", uuid, CHANNEL_ENV, TxID)
@@ -88,16 +83,13 @@ func (cc *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 
 	if function == "set" {
 		// Make payment of X units from A to B
-		result, err = cc.set(stub, args)
-		if err != nil {
-			log.Errorf("[%s][%s][%s][set] Error %v",uuidgen(), CHANNEL_ENV, TxID, err)
-		}
+		cc.set(stub, args)
 	} else if function == "delete" {
 		// Deletes an entity from its state
-		result, err = cc.delete(stub, args)
+		cc.delete(stub, args)
 	} else if function == "query" {
 		// the old "Query" is now implemtned in set
-		result, err = cc.query(stub, args)
+		cc.query(stub, args)
 	}
 	return shim.Success([]byte(result))
 }
@@ -110,20 +102,15 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 
 	uuid := uuidgen()
 	log.Infof("[%s][%s][%s][usecase_cc][set] ex02 set", uuid, CHANNEL_ENV, TxID)
-	hasher := sha256.New()
-	hasher.Write([]byte(uuid))
-	sha := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
-	params := []string{"set", uuid, sha}
-	fmt.Printf("uuid = %s, sha = %s\n", uuid, sha)
-	invokeArgs := make([][]byte, len(params))
-	for i, arg := range params {invokeArgs[i] = []byte(arg)}
+	invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 
 
 	if len(args) != 3 {
-		//return shim.Error("Incorrect number of arguments. Expecting 3")
-		log.Errorf("[%s][%s][%s][usecase_cc][valueIssuer] Incorrect number of arguments. Expecting 3",uuidgen(), CHANNEL_ENV, TxID)
-		return "" , errors.New(ERRORWrongNumberArgs)
+		uuid := uuidgen()
+		log.Errorf("[%s][%s][%s][usecase_cc][valueIssuer] Incorrect number of arguments. Expecting 3", uuid, CHANNEL_ENV, TxID)
+		invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 	}
 
 	A = args[0]
@@ -132,26 +119,35 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	// Get the state from the ledger
 	Avalbytes, err := stub.GetState(A)
 	if err != nil {
-		//return shim.Error("Failed to get state")
-		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to get state",uuidgen(), CHANNEL_ENV, TxID)
+		uuid := uuidgen()
+		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to get state", uuid, CHANNEL_ENV, TxID)
+		invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 		return "" , errors.New(ERRORGetState)
 	}
 	if Avalbytes == nil {
-		//return shim.Error("Entity not found")	
-		log.Errorf("[%s][%s][%s][usecase_cc][idIssuer] Entity not found",uuidgen(), CHANNEL_ENV, TxID)	
+		uuid := uuidgen()	
+		log.Errorf("[%s][%s][%s][usecase_cc][idIssuer] Entity not found", uuid, CHANNEL_ENV, TxID)
+		invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 		return "" , errors.New(ERRORnotID)	
 	}
 	Aval, _ = strconv.Atoi(string(Avalbytes))
 
 	Bvalbytes, err := stub.GetState(B)
 	if err != nil {
-		//return shim.Error("Failed to get state")
-		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to get state",uuidgen(), CHANNEL_ENV, TxID)
+		uuid := uuidgen()
+		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to get state",	uuid, CHANNEL_ENV, TxID)
+		invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 		return "" , errors.New(ERRORGetState)
 	}
 	if Bvalbytes == nil {
 		//return shim.Error("Entity not found")
-		log.Errorf("[%s][%s][%s][usecase_cc][idIssuer] Entity not found",uuidgen(), CHANNEL_ENV, TxID)	
+		uuid := uuidgen()
+		log.Errorf("[%s][%s][%s][usecase_cc][idIssuer] Entity not found", uuid, CHANNEL_ENV, TxID)
+		invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 		return "" , errors.New(ERRORnotID)
 	}
 	Bval, _ = strconv.Atoi(string(Bvalbytes))
@@ -159,49 +155,53 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	// Perform the execution
 	X, err = strconv.Atoi(args[2])
 	if err != nil {
-		//return shim.Error("Invalid transaction amount, expecting a integer value")
-		log.Errorf("[%s][%s][%s][usecase_cc][valueIssuer] Invalid transaction amount, expecting a integer value",uuidgen(), CHANNEL_ENV, TxID)
+		uuid := uuidgen()
+		log.Errorf("[%s][%s][%s][usecase_cc][valueIssuer] Invalid transaction amount, expecting a integer value", uuid, CHANNEL_ENV, TxID)
+		invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 		return "" , errors.New(ERRORParsingData)	
 	}
 	Aval = Aval + X
 	Bval = Bval + X
-	//fmt.Printf("Aval = %d, Bval = %d\n", Aval, Bval)
-	log.Infof("[%s][%s][%s][usecase_cc][Transaction] Aval = %d, Bval = %d after performing the transaction",uuidgen(), CHANNEL_ENV, TxID, Aval, Bval)	
+	uuid = uuidgen()
+	log.Infof("[%s][%s][%s][usecase_cc][Transaction] Aval = %d, Bval = %d after performing the transaction", uuid, CHANNEL_ENV, TxID, Aval, Bval)	
+	invokeArgs = prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 
 	// Write the state back to the ledger
 	err = stub.PutState(A, []byte(strconv.Itoa(Aval)))
 	if err != nil {
-		//return shim.Error(err.Error())
-		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to write the state back to the ledger",uuidgen(), CHANNEL_ENV, TxID)
+		uuid := uuidgen()
+		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to write the state back to the ledger", uuid, CHANNEL_ENV, TxID)
+		invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 		return "" , errors.New(ERRORPutState)	
 	}
 
 	err = stub.PutState(B, []byte(strconv.Itoa(Bval)))
 	if err != nil {
-		//return shim.Error(err.Error())
-		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to write the state back to the ledger",uuidgen(), CHANNEL_ENV, TxID)
+		uuid := uuidgen()
+		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to write the state back to the ledger", uuid, CHANNEL_ENV, TxID)
+		invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 		return "" , errors.New(ERRORPutState)
 	}
 
 	uuid = uuidgen()
-	payloadAsBytes := []byte(strconv.Itoa(Bval))
-	log.Infof("[%s][%s][%s][usecase_cc][Transaction] Transaction makes payment of X units from A to B",uuid, CHANNEL_ENV, TxID)
-	hasher = sha256.New()
-	hasher.Write([]byte(uuid))
-	sha = base64.URLEncoding.EncodeToString(hasher.Sum(nil))
-	params = []string{"set", uuid, sha}
-	fmt.Printf("uuid = %s, sha = %s\n", uuid, sha)
-	invokeArgs = make([][]byte, len(params))
-	for i, arg := range params {invokeArgs[i] = []byte(arg)}
+	log.Infof("[%s][%s][%s][usecase_cc][Transaction] Transaction makes payment of X units from A to B", uuid, CHANNEL_ENV, TxID)
+	invokeArgs = prepareToInvoke(uuid, TxID, CHANNEL_ENV)
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 
-	return string(payloadAsBytes) , errors.New("")
+	return string(X) , errors.New("")
 }
 
 // Deletes an entity from state
 func (cc *Chaincode) delete(stub shim.ChaincodeStubInterface, args []string) (string, error){
 	if len(args) != 1 {
-		log.Errorf("[%s][%s][%s][usecase_cc][valueIssuer] Incorrect number of arguments. Expecting 1",uuidgen(), CHANNEL_ENV, TxID)
+		uuid := uuidgen()
+		log.Errorf("[%s][%s][%s][usecase_cc][valueIssuer] Incorrect number of arguments. Expecting 1", uuid, CHANNEL_ENV, TxID)
+		invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 		return "" , errors.New(ERRORWrongNumberArgs)
 	}
 
@@ -210,11 +210,17 @@ func (cc *Chaincode) delete(stub shim.ChaincodeStubInterface, args []string) (st
 	// Delete the key from the state in ledger
 	err := stub.DelState(A)
 	if err != nil {
-		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to delete state",uuidgen(), CHANNEL_ENV, TxID)
+		uuid := uuidgen()
+		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to delete state", uuid, CHANNEL_ENV, TxID)
+		invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 		return "" , errors.New(ERRORDelState)
 	}
 
-	log.Infof("[%s][%s][%s][usecase_cc][DelState] Succeed to delete an entity from state",uuidgen(), CHANNEL_ENV, TxID)
+	uuid := uuidgen()
+	log.Infof("[%s][%s][%s][usecase_cc][DelState] Succeed to delete an entity from state", uuid, CHANNEL_ENV, TxID)
+	invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 	return "", errors.New("")
 }
 
