@@ -92,6 +92,7 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       - CORE_OPERATIONS_LISTENADDRESS=peer0.org1.example.com:9441
       - CORE_METRICS_PROVIDER=prometheus
+      - CORE_VM_DOCKER_ATTACHSTDOUT=true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./../../crypto-material/config_solo/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp:/etc/hyperledger/fabric/msp
@@ -134,6 +135,7 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       - CORE_OPERATIONS_LISTENADDRESS=peer0.org2.example.com:9442
       - CORE_METRICS_PROVIDER=prometheus
+      - CORE_VM_DOCKER_ATTACHSTDOUT=true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./../../crypto-material/config_solo/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp:/etc/hyperledger/fabric/msp
