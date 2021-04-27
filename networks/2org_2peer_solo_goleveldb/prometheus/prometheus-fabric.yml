@@ -15,10 +15,8 @@ scrape_configs:
             "prometheus:9090",
             "pushGateway:9091",
             "orderer.example.com:9441",
-            "peer0.org1.example.com:9442",
-            "peer0.org2.example.com:9443",
-            "peer0.org2.example.com:9444",
-            "peer1.org2.example.com:9445",
+            "peer0.org1.example.com:9441",
+            "peer0.org2.example.com:9442",
           ]
   - job_name: cadvisor
     scrape_interval: 5s

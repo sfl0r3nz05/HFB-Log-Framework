@@ -29,19 +29,31 @@ response = loop.run_until_complete(cli.chaincode_query(
     peers=['peer0.org1.example.com'],
     args=args,
     cc_name='usecase_cc',
-    fcn="query"
+    fcn="get"
 ))
 print("response", response)
 
-#   #   # Query a chaincode
-#   args = ['8d635441-9644-481b-a727-4c604fa3777b']
-#   # The response should be true if succeed
-#   response = loop.run_until_complete(cli.chaincode_query(
-#       requestor=org1_admin,
-#       channel_name='modbuschannel',
-#       peers=['peer0.org1.example.com'],
-#       args=args,
-#       cc_name='base_cc',
-#       fcn="get"
-#   ))
-#   print("response", response)
+#   # Query a chaincode
+args = ['a0c24305-3e16-471e-b881-96cfb53c7b70']
+# The response should be true if succeed
+response = loop.run_until_complete(cli.chaincode_query(
+    requestor=org1_admin,
+    channel_name='modbuschannel',
+    peers=['peer0.org1.example.com'],
+    args=args,
+    cc_name='base_cc',
+    fcn="get"
+))
+print("response", response)
+
+args = ['dbf61715-dcdd-4309-8d61-e60e2939dc67']
+# The response should be true if succeed
+response = loop.run_until_complete(cli.chaincode_query(
+    requestor=org1_admin,
+    channel_name='modbuschannel',
+    peers=['peer0.org1.example.com'],
+    args=args,
+    cc_name='base_cc',
+    fcn="get"
+))
+print("response", response)

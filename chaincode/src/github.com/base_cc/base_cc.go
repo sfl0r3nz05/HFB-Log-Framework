@@ -41,10 +41,14 @@
  }
  
  func set(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+	fmt.Println("ex02 set")
+
 	 if len(args) != 2 {
 		 return "", fmt.Errorf("Incorrect arguments. Expecting a key and a value")
 	 }
- 
+	 
+	 fmt.Println("%s", args[0])
+	 fmt.Println("%s", args[1])
 	 err := stub.PutState(args[0], []byte(args[1]))
 	 if err != nil {
 		 return "", fmt.Errorf("Failed to set asset: %s", args[0])
@@ -54,6 +58,8 @@
  
  // Get returns the value of the specified asset key
  func get(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+	fmt.Println("ex02 get")
+
 	 if len(args) != 1 {
 		 return "", fmt.Errorf("Incorrect arguments. Expecting a key")
 	 }

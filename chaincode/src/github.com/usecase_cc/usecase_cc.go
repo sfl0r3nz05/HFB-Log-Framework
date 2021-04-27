@@ -93,12 +93,12 @@ func (cc *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	if function == "set" {
 		// Make payment of X units from A to B
 		cc.set(stub, args)
+	} else if function == "get" {
+		// Query an entity from its state
+		cc.get(stub, args)
 	} else if function == "delete" {
-		// Deletes an entity from its state
+		// Delete
 		cc.delete(stub, args)
-	} else if function == "query" {
-		// the old "Query" is now implemtned in set
-		cc.query(stub, args)
 	}
 	return shim.Success([]byte(result))
 }
@@ -110,7 +110,6 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	var X int          // Transaction value
 
 	uuid := uuidgen()
-	TxID = stub.GetTxID()
 	TxID = stub.GetTxID()
 	log.Infof("[%s][%s][%s][usecase_cc][set] ex02 set", uuid, CHANNEL_ENV, TxID)
 	invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
@@ -249,7 +248,7 @@ func (cc *Chaincode) delete(stub shim.ChaincodeStubInterface, args []string) (st
 }
 
 // query callback representing the query of a chaincode
-func (cc *Chaincode) query(stub shim.ChaincodeStubInterface, args []string) (string, error){
+func (cc *Chaincode) get(stub shim.ChaincodeStubInterface, args []string) (string, error){
 	var A string // Entities
 	var err error
 
@@ -289,7 +288,7 @@ func (cc *Chaincode) query(stub shim.ChaincodeStubInterface, args []string) (str
 	uuid := uuidgen()
 	TxID = stub.GetTxID()
 	jsonResp := "{\"Name\":\"" + A + "\",\"Amount\":\"" + string(Avalbytes) + "\"}"
-	log.Infof("[%s][%s][%s][usecase_cc][Query] Query Response: %s",uuid, CHANNEL_ENV, TxID, jsonResp)
+	log.Infof("[%s][%s][%s][usecase_cc][Get] Query Response: %s", uuid, CHANNEL_ENV, TxID, jsonResp)
 	invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 	return string(Avalbytes) , errors.New(ERRORParsingData)

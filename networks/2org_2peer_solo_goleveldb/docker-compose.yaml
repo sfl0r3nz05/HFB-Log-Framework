@@ -174,7 +174,7 @@ services:
     depends_on:
       - prometheus
     ports:
-      - 3000:3000
+      - 80:3000
     volumes:
       - grafana_storage:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
@@ -211,7 +211,8 @@ services:
       - ./../../connection-profile:/connection-profile
       - ./../../crypto-material:/crypto-material
       - ./../../chaincode:/chaincode
-    command: sh -c "python3 channel-join.py && python3 deploy-chaincode-base_cc.py && python3 deploy-chaincode-usecase_cc.py && python3 invoke.py && python3 query.py"
-    #command: sh -c "python3 query.py"
+    #command: sh -c "python3 channel-join.py && python3 deploy-chaincode-base_cc.py && python3 deploy-chaincode-usecase_cc.py && python3 invoke.py && python3 query.py"
+    #command: sh -c "python3 invoke.py && python3 query.py"
+    command: sh -c "python3 query.py"
     ports:
       - 6020:6020
