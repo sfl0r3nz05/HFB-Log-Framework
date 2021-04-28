@@ -190,8 +190,10 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	if err != nil {
 		uuid = uuidgen()
 		TxID = stub.GetTxID()
-		log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to write the state back to the ledger", uuid, CHANNEL_ENV, TxID)
-		invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+		re := captureOutput(func(){
+			log.Errorf("[%s][%s][%s][usecase_cc][stateIssuer] Failed to write the state back to the ledger", uuid, CHANNEL_ENV, TxID)
+		})
+		invokeArgs := prepareToInvoke(uuid, re, CHANNEL_ENV)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 		return "" , errors.New(ERRORPutState)	
 	}
@@ -208,8 +210,10 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 
 	uuid = uuidgen()
 	TxID = stub.GetTxID()
-	log.Infof("[%s][%s][%s][usecase_cc][Transaction] Transaction makes payment of X units from A to B", uuid, CHANNEL_ENV, TxID)
-	invokeArgs = prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+	re := captureOutput(func(){
+		log.Infof("[%s][%s][%s][usecase_cc][Transaction] Transaction makes payment of X units from A to B", uuid, CHANNEL_ENV, TxID)
+	})
+	invokeArgs = prepareToInvoke(uuid, re, CHANNEL_ENV)
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 
 	return string(X) , errors.New("")
