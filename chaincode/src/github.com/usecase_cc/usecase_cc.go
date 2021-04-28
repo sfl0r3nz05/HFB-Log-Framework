@@ -111,8 +111,10 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 
 	uuid := uuidgen()
 	TxID = stub.GetTxID()
-	log.Infof("[%s][%s][%s][usecase_cc][set] ex02 set", uuid, CHANNEL_ENV, TxID)
-	invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+	re := captureOutput(func(){
+		log.Infof("[%s][%s][%s][usecase_cc][set] ex02 set", uuid, CHANNEL_ENV, TxID)
+	})
+	invokeArgs := prepareToInvoke(uuid, re, CHANNEL_ENV)
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 
 
@@ -181,8 +183,10 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	Bval = Bval + X
 	uuid = uuidgen()
 	TxID = stub.GetTxID()
-	log.Infof("[%s][%s][%s][usecase_cc][Transaction] Aval = %d, Bval = %d after performing the transaction", uuid, CHANNEL_ENV, TxID, Aval, Bval)	
-	invokeArgs = prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+	re = captureOutput(func(){
+		log.Infof("[%s][%s][%s][usecase_cc][Transaction] Aval = %d, Bval = %d after performing the transaction", uuid, CHANNEL_ENV, TxID, Aval, Bval)
+	})
+	invokeArgs = prepareToInvoke(uuid, re, CHANNEL_ENV)
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 
 	// Write the state back to the ledger
@@ -210,7 +214,7 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 
 	uuid = uuidgen()
 	TxID = stub.GetTxID()
-	re := captureOutput(func(){
+	re = captureOutput(func(){
 		log.Infof("[%s][%s][%s][usecase_cc][Transaction] Transaction makes payment of X units from A to B", uuid, CHANNEL_ENV, TxID)
 	})
 	invokeArgs = prepareToInvoke(uuid, re, CHANNEL_ENV)
@@ -292,8 +296,10 @@ func (cc *Chaincode) get(stub shim.ChaincodeStubInterface, args []string) (strin
 	uuid := uuidgen()
 	TxID = stub.GetTxID()
 	jsonResp := "{\"Name\":\"" + A + "\",\"Amount\":\"" + string(Avalbytes) + "\"}"
-	log.Infof("[%s][%s][%s][usecase_cc][Get] Query Response: %s", uuid, CHANNEL_ENV, TxID, jsonResp)
-	invokeArgs := prepareToInvoke(uuid, TxID, CHANNEL_ENV)
+	re := captureOutput(func(){
+		log.Infof("[%s][%s][%s][usecase_cc][Get] Query Response: %s", uuid, CHANNEL_ENV, TxID, jsonResp)
+	})
+	invokeArgs := prepareToInvoke(uuid, re, CHANNEL_ENV)
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 	return string(Avalbytes) , errors.New(ERRORParsingData)
 }

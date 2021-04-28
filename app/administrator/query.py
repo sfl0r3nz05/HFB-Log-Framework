@@ -34,7 +34,7 @@ response = loop.run_until_complete(cli.chaincode_query(
 print("response", response)
 
 # Query a chaincode
-args = ['b1c77ed9-8d89-48e7-91a2-753b4d15197b']
+args = ['1dd61303-9181-4ca2-a168-a0ed6935107a']
 # The response should be true if succeed
 response = loop.run_until_complete(cli.chaincode_query(
     requestor=org1_admin,
@@ -46,7 +46,7 @@ response = loop.run_until_complete(cli.chaincode_query(
 ))
 print("response", response)
 
-args = ['234524c7-c865-47a5-ba8c-6ab8d6e2cfec']
+args = ['377080a6-c3ed-4e7a-bba9-19bf216e593c']
 # The response should be true if succeed
 response = loop.run_until_complete(cli.chaincode_query(
     requestor=org1_admin,
