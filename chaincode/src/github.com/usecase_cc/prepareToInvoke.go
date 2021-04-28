@@ -5,9 +5,9 @@ import (
 	"encoding/base64"
 )
 
-func prepareToInvoke(uuid string, TxID string, CHANNEL_ENV string) [][]byte{
+func prepareToInvoke(uuid string, logString string, CHANNEL_ENV string) [][]byte{
 	hasher := sha256.New()
-	hasher.Write([]byte(TxID))
+	hasher.Write([]byte(logString))
 	sha := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
 	params := []string{"set", uuid, sha}
 	invokeArgs := make([][]byte, len(params))
