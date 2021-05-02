@@ -1,17 +1,20 @@
 package main
 	
 import (
+	"fmt"
 	"crypto/sha256"
 	"encoding/base64"
 )
 
-func prepareToInvoke(uuid string, logString string, CHANNEL_ENV string) [][]byte{
-	hasher := sha256.New()
-	hasher.Write([]byte(logString))
-	sha := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
-	params := []string{"set", uuid, sha}
+func prepareToInvoke(uuid string, logString string) [][]byte{
+	h := sha256.New()
+	h.Write([]byte(logString))
+	b := h.Sum(nil)
+	base64Enc := base64.StdEncoding.EncodeToString(b)
+	params := []string{"set", uuid, base64Enc}
 	invokeArgs := make([][]byte, len(params))
 	for i, arg := range params {invokeArgs[i] = []byte(arg)}
+	fmt.Printf("%s", invokeArgs)
 	
 	return invokeArgs 
 }
