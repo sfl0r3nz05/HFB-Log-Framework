@@ -20,67 +20,67 @@ gopath = os.path.normpath(os.path.join(
 ))
 os.environ['GOPATH'] = os.path.abspath(gopath)
 
-#   #   #   #Query a chaincode
-#   args = ['b']
+#   #   #Query a chaincode
+args = ['b']
+# The response should be true if succeed
+response = loop.run_until_complete(cli.chaincode_query(
+    requestor=org1_admin,
+    channel_name='modbuschannel',
+    peers=['peer0.org1.example.com'],
+    args=args,
+    cc_name='usecase_cc',
+    fcn="get"
+))
+print("response", response)
+
+#   #Query a chaincode
+#   args = ['e7a989ba-0d36-4434-8f2d-e21408304739']
 #   # The response should be true if succeed
 #   response = loop.run_until_complete(cli.chaincode_query(
 #       requestor=org1_admin,
 #       channel_name='modbuschannel',
 #       peers=['peer0.org1.example.com'],
 #       args=args,
-#       cc_name='usecase_cc',
+#       cc_name='base_cc',
 #       fcn="get"
 #   ))
 #   print("response", response)
-
-#Query a chaincode
-args = ['80bf634e-92d9-4e6b-b3c4-d393e3e04682']
-# The response should be true if succeed
-response = loop.run_until_complete(cli.chaincode_query(
-    requestor=org1_admin,
-    channel_name='modbuschannel',
-    peers=['peer0.org1.example.com'],
-    args=args,
-    cc_name='base_cc',
-    fcn="get"
-))
-print("response", response)
-   
-#   #   #Query a chaincode
-args = ['8154a4ee-80d2-471e-8ef7-68b43389e280']
-# The response should be true if succeed
-response = loop.run_until_complete(cli.chaincode_query(
-    requestor=org1_admin,
-    channel_name='modbuschannel',
-    peers=['peer0.org1.example.com'],
-    args=args,
-    cc_name='base_cc',
-    fcn="get"
-))
-print("response", response)
-   
-#   #   #Query a chaincode
-args = ['6e4e44b7-41a2-4a75-ad79-f1bf57012685']
-# The response should be true if succeed
-response = loop.run_until_complete(cli.chaincode_query(
-    requestor=org1_admin,
-    channel_name='modbuschannel',
-    peers=['peer0.org1.example.com'],
-    args=args,
-    cc_name='base_cc',
-    fcn="get"
-))
-print("response", response)
-   
+#   
 #   #   #   #Query a chaincode
-args = ['fb36b9b8-cf54-43e8-8470-a3f7bc30e076']
-# The response should be true if succeed
-response = loop.run_until_complete(cli.chaincode_query(
-    requestor=org1_admin,
-    channel_name='modbuschannel',
-    peers=['peer0.org1.example.com'],
-    args=args,
-    cc_name='base_cc',
-    fcn="get"
-))
-print("response", response)
+#   args = ['0704898c-8886-4e72-ac7d-010f4cc4fbf9']
+#   # The response should be true if succeed
+#   response = loop.run_until_complete(cli.chaincode_query(
+#       requestor=org1_admin,
+#       channel_name='modbuschannel',
+#       peers=['peer0.org1.example.com'],
+#       args=args,
+#       cc_name='base_cc',
+#       fcn="get"
+#   ))
+#   print("response", response)
+#      
+#   #   #   #Query a chaincode
+#   args = ['9c9c553c-ba38-44d6-8897-885d775e53be']
+#   # The response should be true if succeed
+#   response = loop.run_until_complete(cli.chaincode_query(
+#       requestor=org1_admin,
+#       channel_name='modbuschannel',
+#       peers=['peer0.org1.example.com'],
+#       args=args,
+#       cc_name='base_cc',
+#       fcn="get"
+#   ))
+#   print("response", response)
+#      
+#   #   #   #   #Query a chaincode
+#   args = ['2bf1caa6-9b5d-4487-8466-f0f476e025bb']
+#   # The response should be true if succeed
+#   response = loop.run_until_complete(cli.chaincode_query(
+#       requestor=org1_admin,
+#       channel_name='modbuschannel',
+#       peers=['peer0.org1.example.com'],
+#       args=args,
+#       cc_name='base_cc',
+#       fcn="get"
+#   ))
+#   print("response", response)

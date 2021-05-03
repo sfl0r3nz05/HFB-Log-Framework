@@ -90,7 +90,6 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	invokeArgs := prepareToInvoke(uuid, re)
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 
-
 	if len(args) != 3 {
 		log.SetFlags(0)
 		uuid := uuidgen()

@@ -1,6 +1,7 @@
 package main
 	
 import (
+	"fmt"
 	"strings"
 	"crypto/sha256"
 	"encoding/base64"
@@ -15,6 +16,7 @@ func prepareToInvoke(uuid string, logString string) [][]byte{
 	params := []string{"set", uuid, base64Enc}
 	invokeArgs := make([][]byte, len(params))
 	for i, arg := range params {invokeArgs[i] = []byte(arg)}
+	fmt.Printf("%x", invokeArgs)
 
 	return invokeArgs 
 }
