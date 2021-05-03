@@ -47,8 +47,8 @@
 		 return "", fmt.Errorf("Incorrect arguments. Expecting a key and a value")
 	 }
 	 
-	 fmt.Println("%s", args[0])
-	 fmt.Println("%s", args[1])
+	 fmt.Println(args[0])
+	 fmt.Println(args[1])
 	 err := stub.PutState(args[0], []byte(args[1]))
 	 if err != nil {
 		 return "", fmt.Errorf("Failed to set asset: %s", args[0])
