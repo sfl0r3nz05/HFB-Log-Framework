@@ -31,7 +31,6 @@ responses = loop.run_until_complete(cli.chaincode_install(
     cc_version='v1.0'
 ))
 
-# The response should be true if succeed
 responses = loop.run_until_complete(cli.chaincode_install(
     requestor=org2_admin,
     peers=['peer0.org2.example.com'],
@@ -57,7 +56,7 @@ policy = {
 response = loop.run_until_complete(cli.chaincode_instantiate(
     requestor=org1_admin,
     channel_name='modbuschannel',
-    peers=['peer0.org1.example.com'],
+    peers=['peer0.org1.example.com', 'peer0.org2.example.com'],
     args=args,
     cc_name='usecase_cc',
     cc_version='v1.0',
@@ -73,8 +72,8 @@ args = ['a']
 response = loop.run_until_complete(cli.chaincode_query(
     requestor=org1_admin,
     channel_name='modbuschannel',
-    peers=['peer0.org1.example.com'],
+    peers=['peer0.org1.example.com', 'peer0.org2.example.com'],
     args=args,
     cc_name='usecase_cc',
-    fcn="query"
+    fcn="get"
 ))

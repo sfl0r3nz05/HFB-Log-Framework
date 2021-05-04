@@ -120,6 +120,7 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
+
 		return "" , errors.New(ERRORGetState)
 	}
 
@@ -134,6 +135,7 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
+
 		return "" , errors.New(ERRORnotID)	
 	}
 
@@ -151,6 +153,7 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
+
 		return "" , errors.New(ERRORGetState)
 	}
 
@@ -165,6 +168,7 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
+
 		return "" , errors.New(ERRORnotID)
 	}
 	Bval, _ = strconv.Atoi(string(Bvalbytes))
@@ -182,6 +186,7 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 		})
 		invokeArgs = prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
+
 		return "" , errors.New(ERRORParsingData)	
 	}
 
@@ -213,6 +218,7 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
+
 		return "" , errors.New(ERRORPutState)	
 	}
 
@@ -228,6 +234,7 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
+		
 		return "" , errors.New(ERRORPutState)
 	}
 
@@ -339,6 +346,7 @@ func (cc *Chaincode) delete(stub shim.ChaincodeStubInterface, args []string) (st
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
+
 		return "" , errors.New(ERRORWrongNumberArgs)
 	}
 
@@ -357,6 +365,7 @@ func (cc *Chaincode) delete(stub shim.ChaincodeStubInterface, args []string) (st
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
+
 		return "" , errors.New(ERRORDelState)
 	}
 
@@ -370,6 +379,7 @@ func (cc *Chaincode) delete(stub shim.ChaincodeStubInterface, args []string) (st
 	})
 	invokeArgs := prepareToInvoke(uuid, re)
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
+
 	return "", errors.New("")
 }
 
