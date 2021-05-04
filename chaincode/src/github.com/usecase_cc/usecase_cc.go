@@ -74,7 +74,7 @@ func (cc *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 }
 
 // Transaction makes payment of X units from A to B
-func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (string, error){
 	var A, B string    // Entities
 	var Aval, Bval int // Asset holdings
 	var X int          // Transaction value
@@ -242,6 +242,21 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	invokeArgs = prepareToInvoke(uuid, re)
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 
+	//IMPORTED FROM GET METHOD ######################################################################################################################
+	Avalbytes, err = stub.GetState(A) // Get the state from the ledger
+	log.SetFlags(0)
+	uuid = uuidgen()
+	TxID = stub.GetTxID()
+	timestamp = timeNow()
+	jsonResp := "{\"Name\":\"" + A + "\",\"Amount\":\"" + string(Avalbytes) + "\"}"
+	log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][Get] Query Response: "+jsonResp)
+	re = captureOutput(func(){
+		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][Get] Query Response: "+jsonResp)
+	})
+	invokeArgs = prepareToInvoke(uuid, re)
+	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
+	//IMPORTED FROM GET METHOD ######################################################################################################################
+
 	return string(X) , errors.New("")
 }
 
@@ -265,9 +280,7 @@ func (cc *Chaincode) get(stub shim.ChaincodeStubInterface, args []string) (strin
 	}
 
 	A = args[0]
-
-	// Get the state from the ledger
-	Avalbytes, err := stub.GetState(A)
+	Avalbytes, err := stub.GetState(A) // Get the state from the ledger
 	if err != nil {
 		log.SetFlags(0)
 		uuid := uuidgen()
@@ -309,6 +322,7 @@ func (cc *Chaincode) get(stub shim.ChaincodeStubInterface, args []string) (strin
 	})
 	invokeArgs := prepareToInvoke(uuid, re)
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
+
 	return string(Avalbytes) , errors.New(ERRORParsingData)
 }
 
