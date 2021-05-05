@@ -31,14 +31,14 @@ responses = loop.run_until_complete(cli.chaincode_install(
     cc_version='v1.0'
 ))
 
-# The response should be true if succeed
-responses = loop.run_until_complete(cli.chaincode_install(
-    requestor=org2_admin,
-    peers=['peer0.org2.example.com'],
-    cc_path='github.com/base_cc',
-    cc_name='base_cc',
-    cc_version='v1.0'
-))
+#   # The response should be true if succeed
+#   responses = loop.run_until_complete(cli.chaincode_install(
+#       requestor=org2_admin,
+#       peers=['peer0.org2.example.com'],
+#       cc_path='github.com/base_cc',
+#       cc_name='base_cc',
+#       cc_version='v1.0'
+#   ))
 
 # Instantiate Chaincode in Channel, the response should be true if succeed
 args = ['b2f79319-c6a8-4d91-ab05-5761656e8e96', 'c9dee11b608f7ce862eccdff4646093f715cd82eed354742461b77a13362f23e']
@@ -58,7 +58,7 @@ policy = {
 response = loop.run_until_complete(cli.chaincode_instantiate(
     requestor=org1_admin,
     channel_name='modbuschannel',
-    peers=['peer0.org1.example.com', 'peer0.org2.example.com'],
+    peers=['peer0.org1.example.com'], #, 'peer0.org2.example.com'
     args=args,
     cc_name='base_cc',
     cc_version='v1.0',
@@ -74,7 +74,7 @@ args = ['b2f79319-c6a8-4d91-ab05-5761656e8e96']
 response = loop.run_until_complete(cli.chaincode_query(
     requestor=org1_admin,
     channel_name='modbuschannel',
-    peers=['peer0.org1.example.com', 'peer0.org2.example.com'],
+    peers=['peer0.org1.example.com'],   #, 'peer0.org2.example.com'
     args=args,
     cc_name='base_cc',
     fcn="get"

@@ -60,15 +60,12 @@ func (cc *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	var result string
 	function, args := stub.GetFunctionAndParameters()
 
-	if function == "set" {
+	if function == "get" {
 		// Make payment of X units from A to B
-		cc.set(stub, args)
-	} else if function == "get" {
-		// Query an entity from its state
 		cc.get(stub, args)
-	} else if function == "delete" {
-		// Delete
-		cc.delete(stub, args)
+	} else if function == "set" {
+		// Query an entity from its state
+		cc.set(stub, args)
 	}
 	return shim.Success([]byte(result))
 }
@@ -249,21 +246,6 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	invokeArgs = prepareToInvoke(uuid, re)
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 
-	//IMPORTED FROM GET METHOD ######################################################################################################################
-	Avalbytes, err = stub.GetState(A) // Get the state from the ledger
-	log.SetFlags(0)
-	uuid = uuidgen()
-	TxID = stub.GetTxID()
-	timestamp = timeNow()
-	jsonResp := "{\"Name\":\"" + A + "\",\"Amount\":\"" + string(Avalbytes) + "\"}"
-	log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][Get] Query Response: "+jsonResp)
-	re = captureOutput(func(){
-		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][Get] Query Response: "+jsonResp)
-	})
-	invokeArgs = prepareToInvoke(uuid, re)
-	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-	//IMPORTED FROM GET METHOD ######################################################################################################################
-
 	return string(X) , errors.New("")
 }
 
@@ -300,6 +282,7 @@ func (cc *Chaincode) get(stub shim.ChaincodeStubInterface, args []string) (strin
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
+		
 		return "" , errors.New(ERRORGetState)	
 	}
 
@@ -315,6 +298,7 @@ func (cc *Chaincode) get(stub shim.ChaincodeStubInterface, args []string) (strin
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
+
 		return "" , errors.New(ERRORParsingData)
 	}
 
@@ -331,56 +315,6 @@ func (cc *Chaincode) get(stub shim.ChaincodeStubInterface, args []string) (strin
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
 
 	return string(Avalbytes) , errors.New(ERRORParsingData)
-}
-
-// Deletes an entity from state
-func (cc *Chaincode) delete(stub shim.ChaincodeStubInterface, args []string) (string, error){
-	if len(args) != 1 {
-		log.SetFlags(0)
-		uuid := uuidgen()
-		TxID = stub.GetTxID()
-		timestamp := timeNow()
-		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][valueIssuer] Incorrect number of arguments. Expecting 1")
-		re := captureOutput(func(){
-			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][valueIssuer] Incorrect number of arguments. Expecting 1")
-		})
-		invokeArgs := prepareToInvoke(uuid, re)
-		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-
-		return "" , errors.New(ERRORWrongNumberArgs)
-	}
-
-	A := args[0]
-
-	// Delete the key from the state in ledger
-	err := stub.DelState(A)
-	if err != nil {
-		log.SetFlags(0)
-		uuid := uuidgen()
-		TxID = stub.GetTxID()
-		timestamp := timeNow()
-		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][stateIssuer] Failed to delete state")
-		re := captureOutput(func(){
-			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][stateIssuer] Failed to delete state")
-		})
-		invokeArgs := prepareToInvoke(uuid, re)
-		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-
-		return "" , errors.New(ERRORDelState)
-	}
-
-	log.SetFlags(0)
-	uuid := uuidgen()
-	TxID = stub.GetTxID()
-	timestamp := timeNow()
-	log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][DelState] Succeed to delete an entity from state")
-	re := captureOutput(func(){
-		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][DelState] Succeed to delete an entity from state")
-	})
-	invokeArgs := prepareToInvoke(uuid, re)
-	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-
-	return "", errors.New("")
 }
 
 func main() {
