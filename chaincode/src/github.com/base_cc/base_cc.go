@@ -9,7 +9,7 @@
  type SimpleAsset struct {
  }
 
- func (t *SimpleAsset) Init(stub shim.ChaincodeStubInterface) peer.Response {
+ func (cc *SimpleAsset) Init(stub shim.ChaincodeStubInterface) peer.Response {
 	fmt.Println("ex02 Init")
 	_, args := stub.GetFunctionAndParameters()
 	if len(args) != 2 {
@@ -23,15 +23,15 @@
 	 return shim.Success(nil)
  }
 
- func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
+ func (cc *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	 // Extract the function and args from the transaction proposal
 	 function, args := stub.GetFunctionAndParameters()
 	 var result string
 	 var err error
 	 if function == "set" {
-		 result, err = set(stub, args)
+		 result, err = cc.set(stub, args)
 	 } else if function == "get" {
-		 result, err = get(stub, args)
+		 result, err = cc.get(stub, args)
 	 } 
 	 if err != nil {
 		return shim.Error(err.Error())
@@ -40,7 +40,7 @@
 	 return shim.Success([]byte(result))
  }
  
- func set(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+ func (cc *SimpleAsset) set(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	fmt.Println("ex02 set")
 
 	 if len(args) != 2 {
@@ -57,7 +57,7 @@
  }
  
  // Get returns the value of the specified asset key
- func get(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+ func (cc *SimpleAsset) get(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	fmt.Println("ex02 get")
 
 	 if len(args) != 1 {

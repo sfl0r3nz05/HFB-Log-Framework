@@ -60,12 +60,10 @@ func (cc *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	var result string
 	function, args := stub.GetFunctionAndParameters()
 
-	if function == "get" {
-		// Make payment of X units from A to B
-		cc.get(stub, args)
-	} else if function == "set" {
-		// Query an entity from its state
-		cc.set(stub, args)
+	if function == "set" {
+		cc.set(stub, args)			// Make payment of X units from A to B
+	} else if function == "get" {
+		cc.get(stub, args)			// Query an entity from its state
 	}
 	return shim.Success([]byte(result))
 }
@@ -92,9 +90,9 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 		uuid := uuidgen()
 		TxID = stub.GetTxID()
 		timestamp := timeNow()
-		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][valueIssuer] Incorrect number of arguments. Expecting 3")
+		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][valueIssuer] Incorrect number of arguments. Expecting 3")
 		re = captureOutput(func(){
-			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][valueIssuer] Incorrect number of arguments. Expecting 3")
+			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][valueIssuer] Incorrect number of arguments. Expecting 3")
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
@@ -111,13 +109,12 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 		uuid := uuidgen()
 		TxID = stub.GetTxID()
 		timestamp := timeNow()
-		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][stateIssuer] Failed to get state")
+		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][stateIssuer] Failed to get state")
 		re = captureOutput(func(){
-			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][stateIssuer] Failed to get state")
+			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][stateIssuer] Failed to get state")
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-
 		return "" , errors.New(ERRORGetState)
 	}
 
@@ -126,13 +123,12 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 		uuid = uuidgen()
 		TxID = stub.GetTxID()
 		timestamp = timeNow()
-		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][idIssuer] Entity not found")
+		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][idIssuer] Entity not found")
 		re = captureOutput(func(){
-			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][idIssuer] Entity not found")
+			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][idIssuer] Entity not found")
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-
 		return "" , errors.New(ERRORnotID)	
 	}
 
@@ -144,13 +140,12 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 		uuid = uuidgen()
 		TxID = stub.GetTxID()
 		timestamp = timeNow()
-		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][stateIssuer] Failed to get state")
+		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][stateIssuer] Failed to get state")
 		re = captureOutput(func(){
-			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][stateIssuer] Failed to get state")
+			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][stateIssuer] Failed to get state")
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-
 		return "" , errors.New(ERRORGetState)
 	}
 
@@ -159,13 +154,12 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 		uuid = uuidgen()
 		TxID = stub.GetTxID()
 		timestamp = timeNow()
-		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][idIssuer] Entity not found")
+		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][idIssuer] Entity not found")
 		re = captureOutput(func(){
-			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][idIssuer] Entity not found")
+			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][idIssuer] Entity not found")
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-
 		return "" , errors.New(ERRORnotID)
 	}
 	Bval, _ = strconv.Atoi(string(Bvalbytes))
@@ -177,13 +171,12 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 		uuid = uuidgen()
 		TxID = stub.GetTxID()
 		timestamp = timeNow()
-		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][valueIssuer] Invalid transaction amount, expecting a integer value")
+		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][valueIssuer] Invalid transaction amount, expecting a integer value")
 		re = captureOutput(func(){
-			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][valueIssuer] Invalid transaction amount, expecting a integer value")
+			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][valueIssuer] Invalid transaction amount, expecting a integer value")
 		})
 		invokeArgs = prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-
 		return "" , errors.New(ERRORParsingData)	
 	}
 
@@ -191,13 +184,14 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	Bval = Bval + X
 	A = strconv.Itoa(Aval)
 	B = strconv.Itoa(Bval)
+
 	log.SetFlags(0)
 	uuid = uuidgen()
 	TxID = stub.GetTxID()
 	timestamp = timeNow()
-	log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][Transaction] Aval ="+A+" Bval ="+B+" after performing the transaction")
+	log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][Transaction] Aval ="+A+" Bval ="+B+" after performing the transaction")
 	re = captureOutput(func(){
-		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][Transaction] Aval ="+A+" Bval ="+B+" after performing the transaction")
+		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][Transaction] Aval ="+A+" Bval ="+B+" after performing the transaction")
 	})
 	invokeArgs = prepareToInvoke(uuid, re)
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
@@ -209,13 +203,12 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 		uuid = uuidgen()
 		TxID = stub.GetTxID()
 		timestamp = timeNow()
-		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][stateIssuer] Failed to write the state back to the ledger")
+		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][stateIssuer] Failed to write the state back to the ledger")
 		re := captureOutput(func(){
-			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][stateIssuer] Failed to write the state back to the ledger")
+			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][stateIssuer] Failed to write the state back to the ledger")
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-
 		return "" , errors.New(ERRORPutState)	
 	}
 
@@ -225,13 +218,12 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 		uuid = uuidgen()
 		TxID = stub.GetTxID()
 		timestamp = timeNow()
-		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][stateIssuer] Failed to write the state back to the ledger")
+		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][stateIssuer] Failed to write the state back to the ledger")
 		re = captureOutput(func(){
-			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][stateIssuer] Failed to write the state back to the ledger")
+			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][stateIssuer] Failed to write the state back to the ledger")
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
-		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-		
+		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)	
 		return "" , errors.New(ERRORPutState)
 	}
 
@@ -239,13 +231,12 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	uuid = uuidgen()
 	TxID = stub.GetTxID()
 	timestamp = timeNow()
-	log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][Transaction] Transaction makes payment of X units from A to B")
+	log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][Transaction] Transaction makes payment of X units from A to B")
 	re = captureOutput(func(){
-		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][Transaction] Transaction makes payment of X units from A to B")
+		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][set][Transaction] Transaction makes payment of X units from A to B")
 	})
 	invokeArgs = prepareToInvoke(uuid, re)
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-
 	return string(X) , errors.New("")
 }
 
@@ -259,9 +250,9 @@ func (cc *Chaincode) get(stub shim.ChaincodeStubInterface, args []string) (strin
 		uuid := uuidgen()
 		TxID = stub.GetTxID()
 		timestamp := timeNow()
-		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc] Incorrect number of arguments. Expecting name of the person to query")
+		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][get] Incorrect number of arguments. Expecting name of the person to query")
 		re := captureOutput(func(){
-			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc] Incorrect number of arguments. Expecting name of the person to query")
+			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][get] Incorrect number of arguments. Expecting name of the person to query")
 		})		
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
@@ -270,6 +261,7 @@ func (cc *Chaincode) get(stub shim.ChaincodeStubInterface, args []string) (strin
 
 	A = args[0]
 	Avalbytes, err := stub.GetState(A) // Get the state from the ledger
+
 	if err != nil {
 		log.SetFlags(0)
 		uuid := uuidgen()
@@ -281,8 +273,7 @@ func (cc *Chaincode) get(stub shim.ChaincodeStubInterface, args []string) (strin
 			log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][get] "+jsonResp)
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
-		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-		
+		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)		
 		return "" , errors.New(ERRORGetState)	
 	}
 
@@ -298,7 +289,6 @@ func (cc *Chaincode) get(stub shim.ChaincodeStubInterface, args []string) (strin
 		})
 		invokeArgs := prepareToInvoke(uuid, re)
 		stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-
 		return "" , errors.New(ERRORParsingData)
 	}
 
@@ -307,13 +297,12 @@ func (cc *Chaincode) get(stub shim.ChaincodeStubInterface, args []string) (strin
 	TxID = stub.GetTxID()
 	timestamp := timeNow()
 	jsonResp := "{\"Name\":\"" + A + "\",\"Amount\":\"" + string(Avalbytes) + "\"}"
-	log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][Get] Query Response: "+jsonResp)
+	log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][get] Query Response: "+jsonResp)
 	re := captureOutput(func(){
-		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][Get] Query Response: "+jsonResp)
+		log.Println("["+timestamp+"]["+uuid+"]["+CHANNEL_ENV+"]["+TxID+"][usecase_cc][get] Query Response: "+jsonResp)
 	})
 	invokeArgs := prepareToInvoke(uuid, re)
 	stub.InvokeChaincode("base_cc", invokeArgs, CHANNEL_ENV)
-
 	return string(Avalbytes) , errors.New(ERRORParsingData)
 }
 

@@ -8,7 +8,7 @@ org1_admin = cli.get_user('org1.example.com', 'Admin')
 org2_admin = cli.get_user('org2.example.com', 'Admin')
 
 # Make the client know there is a channel in the network
-cli.new_channel('modbuschannel')
+cli.new_channel('channel1')
 
 # Install Example Chaincode to Peers
 # GOPATH setting is only needed to use the example chaincode inside sdk
@@ -24,7 +24,7 @@ args = ['a', 'b', '100']
 # The response should be true if succeed
 response = loop.run_until_complete(cli.chaincode_invoke(
     requestor=org1_admin,
-    channel_name='modbuschannel',
+    channel_name='channel1',
     peers=['peer0.org1.example.com'],
     args=args,
     cc_name='usecase_cc',
