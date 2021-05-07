@@ -1,5 +1,7 @@
 # LogAuHFBCH: Log Auditing emitted by HFB's Chaincode
 
+![alt text](https://github.com/sfl0r3nz05/LogAuHFBCH/blob/main/img/System overview.png?raw=true)
+
 ## SET ENVIRONMENTAL VARIABLES
 
 1. export FABRIC_VERSION=1.4.6
@@ -12,18 +14,8 @@
    - paste ip address (url): ~/HFB-network-main/connection-profile/network.json
 
 4. Deploy HFB network
-
    - cd networks/2org_2peer_solo_goleveldb
    - docker-compose up -d
-
----
-
-| chaincode          | channel-join | deploy-chaincode | invoke | query  |
-| ------------------ | ------------ | ---------------- | ------ | ------ |
-| usecase_cc         | v1           | v1               | v1     | v1     |
-| ------------------ | ------------ | ---------------- | ------ | ------ |
-
----
 
 5. If error "gopath not found":
    find -name gopath
@@ -38,5 +30,8 @@
 8. go get golang.org/x/sys/unix
    sudo cp -rf /home/ubuntu/go/src/golang.org /var/lib/docker/overlay2/4300e823d5268d558c19370bda0ff2fa61e54c4c743133b5be58634adfbefc3b/diff/opt/gopath/src/
 
-9. 
-   sudo cp -rf /home/ubuntu/HFB-network-main/chaincode/src/github.com/usecase_cc/log /var/lib/docker/overlay2/4300e823d5268d558c19370bda0ff2fa61e54c4c743133b5be58634adfbefc3b/diff/opt/gopath/src/github.com/
+To Do:
+ 1. Deploy Hyperledger Explorer
+ 2. Deploy ELK infrastructure
+ 3. Include Python Script to verify each log
+ 4. Include performance evaluation
