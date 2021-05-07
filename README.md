@@ -1,4 +1,4 @@
-# LogAuHFBCH: ## Log Auditing emitted by HFB's Chaincode
+# LogAuHFBCH: Log Auditing emitted by HFB's Chaincode
 
 ## SET ENVIRONMENTAL VARIABLES
 
