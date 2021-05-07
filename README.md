@@ -1,6 +1,6 @@
 # LogAuHFBCH: Log Auditing emitted by HFB's Chaincode
 
-![alt text](https://github.com/sfl0r3nz05/LogAuHFBCH/blob/main/img/System overview.png?raw=true)
+![alt text](https://github.com/sfl0r3nz05/LogAuHFBCH/blob/main/img/System%20overview.png)
 
 ## SET ENVIRONMENTAL VARIABLES
 
