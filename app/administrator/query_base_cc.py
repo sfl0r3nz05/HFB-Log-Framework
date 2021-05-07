@@ -21,7 +21,7 @@ gopath = os.path.normpath(os.path.join(
 os.environ['GOPATH'] = os.path.abspath(gopath)
 
 #Query a chaincode
-args = ['b2f79319-c6a8-4d91-ab05-5761656e8e96']
+args = ['ac7d5a13-3de4-4cb9-b56f-a28f72bfb147']
 # The response should be true if succeed
 response = loop.run_until_complete(cli.chaincode_query(
     requestor=org1_admin,

@@ -19,8 +19,9 @@ gopath = os.path.normpath(os.path.join(
 ))
 os.environ['GOPATH'] = os.path.abspath(gopath)
 
+#for lp in range(100):
 # Invoke a chaincode
-args = ['a', 'b', '100']
+args = ['a', 'b', '1']
 # The response should be true if succeed
 response = loop.run_until_complete(cli.chaincode_invoke(
     requestor=org1_admin,

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"errors"
 	"strconv"
@@ -57,14 +58,19 @@ func (cc *Chaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 }
 
 func (cc *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
-	var result string
 	function, args := stub.GetFunctionAndParameters()
+	var result string
+	var err error
 
-	if function == "set" {
-		cc.set(stub, args)			// Make payment of X units from A to B
-	} else if function == "get" {
-		cc.get(stub, args)			// Query an entity from its state
+	if function == "get" {
+		cc.get(stub, args)			// Make payment of X units from A to B
+	} else if function == "set" {
+		cc.set(stub, args)			// Query an entity from its state
 	}
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
 	return shim.Success([]byte(result))
 }
 
@@ -240,7 +246,7 @@ func (cc *Chaincode) set(stub shim.ChaincodeStubInterface, args []string) (strin
 	return string(X) , errors.New("")
 }
 
-// query callback representing the query of a chaincode
+// Transaction makes payment of X units from A to B
 func (cc *Chaincode) get(stub shim.ChaincodeStubInterface, args []string) (string, error){
 	var A string // Entities
 	var err error
@@ -309,6 +315,6 @@ func (cc *Chaincode) get(stub shim.ChaincodeStubInterface, args []string) (strin
 func main() {
 	err := shim.Start(new(Chaincode))
 	if err != nil {
-		panic(err)
+		fmt.Printf("Error starting Simple chaincode: %s", err)
 	}
 }
