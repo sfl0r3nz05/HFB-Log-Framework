@@ -34,5 +34,6 @@ To Do:
  1. Deploy Hyperledger Explorer
  2. Deploy ELK infrastructure
  3. Include Python Script to verify each log
-![alt text](https://github.com/sfl0r3nz05/LogAuHFBCH/blob/main/img/System%20overview.png)
- 4. Include performance evaluation
+![alt text](https://github.com/sfl0r3nz05/LogAuHFBCH/blob/main/img/System%20overviewII.png)
+ 4. Include performance evaluation, e.g.:
+![alt text](https://github.com/sfl0r3nz05/LogAuHFBCH/blob/main/img/performance.png) 
