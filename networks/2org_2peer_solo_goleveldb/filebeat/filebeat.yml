@@ -1,0 +1,12 @@
+filebeat.inputs:
+- type: log
+	enabled: true   
+	paths:  - /var/lib/docker/containers/f02dce292d641a3c61ecafb7ab7bf77f6b66f4f39a87a9f73d1c38d64fb311a1/*.log
+
+output.elasticsearch:
+  hosts: ["http://localhost:9200"]
+  processors:   
+	- dissect:       
+    tokenizer: '{"[%{time}][%{uuid}][%{channel}][%{id}][%{chaincode}][%{method}] %{specificinfo}\"\n%{}'
+		field: "message"       
+		target_prefix: ""
