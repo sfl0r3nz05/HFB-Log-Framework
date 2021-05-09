@@ -1,7 +1,7 @@
 filebeat.inputs:
 - type: container
   paths:
-    - '/var/lib/docker/containers/a499f4ccde1e516c3e893a716bbade6d4ec6ec1d266ea395aeb25767189d9a28/a499f4ccde1e516c3e893a716bbade6d4ec6ec1d266ea395aeb25767189d9a28.log'
+    - '/var/lib/docker/containers/62e51308f3fcbe04cb35656a975871ce0bf29bea70769bfbe7ecba6bcabfd6df/62e51308f3fcbe04cb35656a975871ce0bf29bea70769bfbe7ecba6bcabfd6df.log'
 
 processors:
 - add_docker_metadata:
