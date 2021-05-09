@@ -10,14 +10,9 @@ processors:
     tokenizer: '{"log":"[%{time}][%{uuid}][%{channel}][%{id}][%{chaincode}][%{method}] %{specificinfo}\"\n%{}'
     field: "message"       
     target_prefix: ""
-# - decode_json_fields:
-#     fields: "message"
-#     target: "json"
-#     max_depth: 100
-#     overwrite_keys: true
 
 output.elasticsearch:
-  hosts: ["3.93.224.197:9200"]
+  hosts: ["elasticsearch:9200"]
   username: "elastic"
   password: "changeme"
   indices:
