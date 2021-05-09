@@ -197,6 +197,8 @@ services:
     restart: always
   
   elasticsearch:
+    container_name: elasticsearch
+    hostname: elasticsearch
     build:
       context: elasticsearch/
       args:
@@ -216,19 +218,10 @@ services:
       ES_JAVA_OPTS: "-Xmx256m -Xms256m"
       ELASTIC_PASSWORD: changeme
       discovery.type: single-node
-  
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:6.2.2
-    command: filebeat -e -strict.perms=false
-    volumes:
-      - type: bind
-        source: ./filebeat/filebeat.yml
-        target: /usr/share/filebeat/filebeat.yml
-        read_only: true
-    depends_on:
-      - elasticsearch
-      
+
   kibana:
+    container_name: kibana
+    hostname: kibana
     build:
       context: kibana/
       args:
@@ -240,6 +233,22 @@ services:
         read_only: true
     ports:
       - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+  filebeat:
+    container_name: filebeat
+    hostname: filebeat
+    build:
+      context: filebeat/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    user: root
+    volumes:
+      - ./filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - /var/lib/docker:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: ["--strict.perms=false"]
     depends_on:
       - elasticsearch
 
@@ -259,8 +268,8 @@ services:
       - ./../../connection-profile:/connection-profile
       - ./../../crypto-material:/crypto-material
       - ./../../chaincode:/chaincode
-    command: sh -c "python3 channel-join.py && python3 deploy-chaincode-base_cc.py && python3 deploy-chaincode-usecase_cc.py && python3 invoke_usecase_cc.py && python3 query_usecase_cc.py"
-    #command: sh -c "python3 query_usecase_cc.py"
+    #command: sh -c "python3 channel-join.py && python3 deploy-chaincode-base_cc.py && python3 deploy-chaincode-usecase_cc.py && python3 invoke_usecase_cc.py && python3 query_usecase_cc.py"
+    command: sh -c "python3 invoke_usecase_cc.py"
     #command: sh -c "python3 query_base_cc.py"
     ports:
       - 6020:6020
