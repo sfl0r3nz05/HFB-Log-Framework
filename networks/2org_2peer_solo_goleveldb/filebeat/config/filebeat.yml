@@ -1,22 +1,25 @@
 filebeat.inputs:
 - type: container
   paths:
-    - '/var/lib/docker/containers/62e51308f3fcbe04cb35656a975871ce0bf29bea70769bfbe7ecba6bcabfd6df/62e51308f3fcbe04cb35656a975871ce0bf29bea70769bfbe7ecba6bcabfd6df.log'
-
+    - '/var/lib/docker/containers/b202d819663ad0805ebb6360119d4c365cc1b5c03d12516793d1386983d27a89/b202d819663ad0805ebb6360119d4c365cc1b5c03d12516793d1386983d27a89.log'
+  json.keys_under_root: true
+  json.add_error_key: true
+  json.message_key: log
+  
 processors:
 - add_docker_metadata:
     host: "unix:///var/run/docker.sock"
 - dissect:
-    tokenizer: '{"log":"[%{time}][%{uuid}][%{channel}][%{id}][%{chaincode}][%{method}] %{specificinfo}\"\n%{}'
+    tokenizer: "%{type} %{time} %{uuid} %{channel} %{id} %{chaincode} %{method} %{specificinfo}"
     field: "message"       
-    target_prefix: ""
+    target_prefix: "dissect"
 
 output.elasticsearch:
-  hosts: ["elasticsearch:9200"]
+  hosts: ["localhost:9200"]
   username: "elastic"
   password: "changeme"
   indices:
-    - index: "filebeat-%{[agent.version]}-%{+yyyy.MM.dd}"
+    - index:
 
 logging.json: true
 logging.metrics.enabled: false

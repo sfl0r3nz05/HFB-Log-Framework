@@ -1,0 +1,66 @@
+filebeat.inputs:
+- type: container
+  paths:
+    - '/var/lib/docker/containers/b202d819663ad0805ebb6360119d4c365cc1b5c03d12516793d1386983d27a89/b202d819663ad0805ebb6360119d4c365cc1b5c03d12516793d1386983d27a89.log'
+
+processors:
+- add_docker_metadata:
+    host: "unix:///var/run/docker.sock"
+- dissect:
+    tokenizer: '{"log":"[%{type}][%{time}][%{uuid}][%{channel}][%{id}][%{chaincode}][%{method}] %{specificinfo}\"\n%{}'
+    field: "message"       
+    target_prefix: ""
+
+output.elasticsearch:
+  hosts: ["54.243.30.103:9200"]
+  username: "elastic"
+  password: "changeme"
+  #indices:
+  #  - index: "filebeat-%{[agent.version]}-%{+yyyy.MM.dd}"
+
+logging.json: true
+logging.metrics.enabled: false
+
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      templates:
+        - condition:
+            contains:
+              docker.container.image: dev-peer0.org1.example.com-usecase_cc-v1.0-b38729db0bb1b247332531ef780a441eb3ea85460180de4eb8ddb7d1ff7dd202
+          config:
+            - type: container
+              paths:
+                - /var/lib/docker/containers/b202d819663ad0805ebb6360119d4c365cc1b5c03d12516793d1386983d27a89/b202d819663ad0805ebb6360119d4c365cc1b5c03d12516793d1386983d27a89.log
+              exclude_lines: ["^\\s+[\\-`('.|_]"]  # drop asciiart lines
+
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      templates:
+        - condition:
+            contains:
+              docker.container.image: dev-peer0.org1.example.com-usecase_cc-v1.0-b38729db0bb1b247332531ef780a441eb3ea85460180de4eb8ddb7d1ff7dd202
+          config:
+            - type: container
+              paths:
+                - /var/lib/docker/containers/b202d819663ad0805ebb6360119d4c365cc1b5c03d12516793d1386983d27a89/b202d819663ad0805ebb6360119d4c365cc1b5c03d12516793d1386983d27a89.log
+              exclude_lines: ["^\\s+[\\-`('.|_]"]  # drop asciiart lines
+
+processors:
+- add_docker_metadata:
+    host: "unix:///var/run/docker.sock"
+- dissect:
+    tokenizer: "%{type} %{time} %{uuid} %{channel} %{id} %{chaincode} %{method} %{specificinfo}"
+    field: "message"       
+    target_prefix: "dissect"
+
+output.elasticsearch:
+  hosts: ["localhost:9200"]
+  username: "elastic"
+  password: "changeme"
+  indices:
+    - index:
+
+logging.json: true
+logging.metrics.enabled: false
