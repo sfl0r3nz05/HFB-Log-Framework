@@ -1,7 +1,7 @@
 filebeat.inputs:
 - type: container
   paths:
-    - '/var/lib/docker/containers/b202d819663ad0805ebb6360119d4c365cc1b5c03d12516793d1386983d27a89/b202d819663ad0805ebb6360119d4c365cc1b5c03d12516793d1386983d27a89.log'
+    - '/var/lib/docker/containers/cf6ab3907704809fdc7b27d8cbaf8851b967e2c2b0d69812b965114aa67ce753/cf6ab3907704809fdc7b27d8cbaf8851b967e2c2b0d69812b965114aa67ce753.log'
   json.keys_under_root: true
   json.add_error_key: true
   json.message_key: log
