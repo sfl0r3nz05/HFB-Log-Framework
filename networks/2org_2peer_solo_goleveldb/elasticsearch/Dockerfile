@@ -1,4 +1,7 @@
-FROM docker.elastic.co/elasticsearch/elasticsearch:6.5.2
-COPY --chown=elasticsearch:elasticsearch elasticsearch.yml /usr/share/elasticsearch/config/
+ARG ELK_VERSION
 
-CMD ["elasticsearch", "-Elogger.level=INFO"]
+# https://www.docker.elastic.co/
+FROM docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
+
+# Add your elasticsearch plugins setup here
+# Example: RUN elasticsearch-plugin install analysis-icu

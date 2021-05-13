@@ -196,58 +196,63 @@ services:
       - 8080:8080
     restart: always
 
-  filebeat:
-    hostname: filebeat
-    image: docker.elastic.co/beats/filebeat:6.5.2
-    build:
-      context: filebeat
-      dockerfile: Dockerfile
-    volumes:
-      # needed to access all docker logs (read only) :
-     - "/var/lib/docker/containers:/usr/share/dockerlogs/data:ro"
-      # needed to access additional informations about containers
-     - "/var/run/docker.sock:/var/run/docker.sock"
-    links:
-       - logstash
-
   kibana:
-    image: docker.elastic.co/kibana/kibana:6.5.2
-    environment:
-      - "LOGGING_QUIET=true"
+    hostname: kibana
+    build:
+      context: kibana/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - type: bind
+        source: ./kibana/config/kibana.yml
+        target: /usr/share/kibana/config/kibana.yml
+        read_only: true
     links:
       - elasticsearch
     ports:
-      - 5601:5601
+      - "5601:5601"
 
   logstash: 
     hostname: logstash 
-    image: docker.elastic.co/logstash/logstash:6.5.2
     build:
-      context: logstash
-      dockerfile: Dockerfile
+      context: logstash/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - type: bind
+        source: ./logstash/config/logstash.yml
+        target: /usr/share/logstash/config/logstash.yml
+      - type: bind
+        source: ./logstash/pipeline
+        target: /usr/share/logstash/pipeline
+        read_only: true
     ports:
-      - 5044:5044
+      - "5000:5000/tcp"
+      - "5000:5000/udp"
+      - "9600:9600"
     environment:
-      LOG_LEVEL: error
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     links:
       - elasticsearch
 
   elasticsearch:
     hostname: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.2
     build:
-      context: elasticsearch
-      dockerfile: Dockerfile
+      context: elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - type: bind
+        source: ./elasticsearch/config/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
     environment:
-      - cluster.name=docker-logs-elk-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_PASSWORD: changeme
+      discovery.type: single-node
     ports:
-      - 9200:9200
+      - "9200:9200"
+      - "9300:9300"
 
   administrator:
     image: sflorenz05/modbusssihfb:administrator
@@ -265,8 +270,8 @@ services:
       - ./../../connection-profile:/connection-profile
       - ./../../crypto-material:/crypto-material
       - ./../../chaincode:/chaincode
-    command: sh -c "python3 channel-join.py && python3 deploy-chaincode-base_cc.py && python3 deploy-chaincode-usecase_cc.py && python3 invoke_usecase_cc.py && python3 query_usecase_cc.py"
-    #command: sh -c "python3 invoke_usecase_cc.py"
+    #command: sh -c "python3 channel-join.py && python3 deploy-chaincode-base_cc.py && python3 deploy-chaincode-usecase_cc.py && python3 invoke_usecase_cc.py && python3 query_usecase_cc.py"
+    command: sh -c "python3 invoke_usecase_cc.py"
     #command: sh -c "python3 query_base_cc.py"
     ports:
       - 6020:6020
