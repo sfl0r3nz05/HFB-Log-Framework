@@ -288,8 +288,8 @@ services:
       - ./../../connection-profile:/connection-profile
       - ./../../crypto-material:/crypto-material
       - ./../../chaincode:/chaincode
-    #command: sh -c "python3 channel-join.py && python3 deploy-chaincode-base_cc.py && python3 deploy-chaincode-usecase_cc.py && python3 invoke_usecase_cc.py && python3 query_usecase_cc.py"
-    command: sh -c "python3 invoke_usecase_cc.py"
+    command: sh -c "python3 channel-join.py && python3 deploy-chaincode-base_cc.py && python3 deploy-chaincode-usecase_cc.py && python3 invoke_usecase_cc.py && python3 query_usecase_cc.py"
+    #command: sh -c "python3 invoke_usecase_cc.py"
     #command: sh -c "python3 query_base_cc.py"
     ports:
       - 6020:6020
