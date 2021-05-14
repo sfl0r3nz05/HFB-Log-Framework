@@ -21,13 +21,13 @@
    -  E.g. sudo chmod +x -R /var/lib/docker/containers/<containerid>
 
 5. Copy the container id in .env  PATH_TO_CONTAINER
-![alt text](https://github.com/sfl0r3nz05/LogAuHFBCH/blob/main/img/Path.png)
+![alt text](https://github.com/sfl0r3nz05/LogAuHFBCH/blob/master/img/Path.png)
 
 6. Delete and run logstash container to start to recive logs.
-![alt text](https://github.com/sfl0r3nz05/LogAuHFBCH/blob/main/img/RemoveContainers.png)
+![alt text](https://github.com/sfl0r3nz05/LogAuHFBCH/blob/master/img/RemoveContainers.png)
 
 7. Logs in logstash can be verified through logs of "logstash container": 
-![alt text](https://github.com/sfl0r3nz05/LogAuHFBCH/blob/main/img/Logs.png)
+![alt text](https://github.com/sfl0r3nz05/LogAuHFBCH/blob/master/img/Logs.png)
 
 ### To Do:
  1. Deploy Hyperledger Explorer
