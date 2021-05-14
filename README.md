@@ -27,7 +27,7 @@
 ![alt text](https://github.com/sfl0r3nz05/LogAuHFBCH/blob/main/img/RemoveContainers.png)
 
 7. Logs in logstash can be verified through logs of "logstash container": 
-![alt text](https://github.com/sfl0r3nz05/LogAuHFBCH/blob/main/img/Log.png)
+![alt text](https://github.com/sfl0r3nz05/LogAuHFBCH/blob/main/img/Logs.png)
 
 ### To Do:
  1. Deploy Hyperledger Explorer
